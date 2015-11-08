@@ -112,16 +112,19 @@ app.get('/reboot', function (req, res) {
     if (proc.toUpperCase() == "FFSERVER")
     {
         processes.ffserver.child.kill();
+        console.log("rebooting FFSERVER");
     }
 
     if (proc.toUpperCase() == "FFM_SOURCE")
     {
         processes.ffmpeg_from_udp.child.kill();
+        console.log("rebooting Source");
     }
 
     if (proc.toUpperCase() == "FFM_CDN")
     {
         processes.ffmpeg_to_cdn.child.kill();
+        console.log("rebooting CDN feed");
     }
     res.writeHead(200, {"Content-Type": "application/json"});
     res.write(JSON.stringify({"error":"OK"}));
