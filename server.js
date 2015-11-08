@@ -6,7 +6,6 @@ var express = require('express');
 var app = express();
 var request = require("request");
 
-var streamingUrl = "http://10.10.10.40:8090/";
 
 var fs = require("fs");
 
@@ -82,7 +81,7 @@ app.get('/data', function (req, res) {
     request('http://localhost:8090/stat.html', function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var js = JSON.parse(body);
-            js.streamingUrl = streamingUrl;
+            js.streamingUrl = 'http://'+req.socket.localAddress+':8090/';
 
             res.writeHead("content-type", "text/html");
             res.write(JSON.stringify(js));
