@@ -54,6 +54,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+
+
+
 var sessionStore = {
         admin: {password:"Administrator", sessKey:""},
         sunny: {password:"Administrator", sessKey:""}
