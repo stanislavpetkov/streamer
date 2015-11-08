@@ -99,9 +99,6 @@ app.get('/data', function (req, res) {
 
 
 app.get('/reboot', function (req, res) {
-    console.log(req.body.process);
-    console.log(req.query.process);
-
     var proc = req.query.process;
 
 
