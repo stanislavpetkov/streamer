@@ -5,6 +5,7 @@
 var express = require('express');
 var app = express();
 var request = require("request");
+var bodyParser = require("body-parser");
 
 
 var fs = require("fs");
@@ -56,6 +57,10 @@ var processes = {
     }
 };
 
+
+app.use(bodyParser.json());
+
+
 app.get('/', function (req, res) {
     var data = fs.readFileSync("index.html");
     res.writeHead("content-type", "text/html");
@@ -85,12 +90,45 @@ app.get('/data', function (req, res) {
             var js = JSON.parse(body);
             js.streamingUrl = 'http://'+req.socket.localAddress+':8090/';
 
-            res.writeHead("content-type", "text/html");
+            res.writeHead(200, {"Content-Type": "application/json"});
             res.write(JSON.stringify(js));
             res.end();
         }
     });
 });
+
+
+app.get('/reboot', function (req, res) {
+    console.log(req.body.process);
+    console.log(req.query.process);
+
+    var proc = req.query.process;
+
+
+    if ((proc == "") && (req.body.hasOwnProperty("process"))) {
+        proc = req.body.enumName;
+    }
+
+    if (proc.toUpperCase() == "FFSERVER")
+    {
+        processes.ffserver.child.kill();
+    }
+
+    if (proc.toUpperCase() == "FFM_SOURCE")
+    {
+        processes.ffmpeg_from_udp.child.kill();
+    }
+
+    if (proc.toUpperCase() == "FFM_CDN")
+    {
+        processes.ffmpeg_to_cdn.child.kill();
+    }
+    res.writeHead(200, {"Content-Type": "application/json"});
+    res.write(JSON.stringify({"error":"OK"}));
+
+    res.end();
+});
+
 
 var spawn = require('child_process').spawn;
 
