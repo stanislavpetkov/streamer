@@ -69,6 +69,15 @@ app.use(express.basicAuth(function(user, pass, callback) {
 }));
 
 
+app.get('/logout', function (req, res) {
+
+    delete req.session.authStatus;
+    res.send([
+        'You are now logged out.'
+    ].join(''));
+
+});
+
 
 app.get('/', function (req, res) {
     var data = fs.readFileSync("index.html");
