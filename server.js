@@ -64,7 +64,7 @@ app.use(bodyParser.json());
 // Authenticator
 app.use(express.basicAuth(function(user, pass, callback) {
     var result = (user === 'admin' && pass === 'admin');
-    console.log("USER PASS");
+
     callback(null /* error */, result);
 }));
 
