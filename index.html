@@ -273,15 +273,18 @@
             var xmlhttp = new XMLHttpRequest();
             var url = document.location + "logout";
 
+
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 
-                    document.getElementById("container").innerHTML = "";
+
                 }
 
             };
+
             xmlhttp.open("GET", url, true);
             xmlhttp.send();
+            document.getElementById("container").innerHTML = "";
         }
     </script>
 
@@ -321,7 +324,7 @@
 
 
 
-    <div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"><a href="#" onclick="logout()">logout</a></span></div>
+    <div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"><a href="" onclick="logout()">logout</a></span></div>
 
 
     <div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div>
