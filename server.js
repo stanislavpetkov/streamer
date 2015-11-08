@@ -208,6 +208,20 @@ process.on('error', function (data) {
     console.log("Some Error :: ", data);
 });
 
+
+process.on('exit', function (data) {
+    if (processes.ffserver.child) {
+        processes.ffserver.child.kill();
+    }
+    if (processes.ffmpeg_to_cdn.child) {
+        processes.ffmpeg_to_cdn.child.kill();
+    }
+    if (processes.ffmpeg_from_udp.child) {
+        processes.ffmpeg_from_udp.child.kill();
+    }
+
+});
+
 process.on('SIGINT', function () {
     stateExit = true;
     if (processes.ffserver.child) {
