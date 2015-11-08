@@ -233,10 +233,10 @@
                 out='<p><div class="feeds1">';
 
                 out += '<div class="ca"><strong>Process table</strong></div><table>'
-                out += '<th>No</th><th>Process</th><th>Control</th>';
-                out += '<tr><td class="ca">1. ('+procs.FFSERVER+') </td><td>Streaming server</td><td><input type="button" onclick="reboot(\'ffserver\')" value="reboot"></td></tr>';
-                out += '<tr><td class="ca">2. ('+procs.FFM_SOURCE+') </td><td>Source feed</td><td><input type="button" onclick="reboot(\'FFM_SOURCE\')" value="reboot"></td></tr>';
-                out += '<tr><td class="ca">3. ('+procs.FFM_CDN+') </td><td>CDN feed</td><td><input type="button" onclick="reboot(\'FFM_CDN\')" value="reboot"></td></tr></table></div></div>';
+                out += '<th>PID</th><th>Process</th><th>Control</th>';
+                out += '<tr><td class="ca">'+procs.FFSERVER+'</td><td>Streaming server</td><td><input type="button" onclick="reboot(\'ffserver\')" value="reboot"></td></tr>';
+                out += '<tr><td class="ca">'+procs.FFM_SOURCE+'</td><td>Source feed</td><td><input type="button" onclick="reboot(\'FFM_SOURCE\')" value="reboot"></td></tr>';
+                out += '<tr><td class="ca">'+procs.FFM_CDN+'</td><td>CDN feed</td><td><input type="button" onclick="reboot(\'FFM_CDN\')" value="reboot"></td></tr></table></div></div>';
 
                 document.getElementById("controls").innerHTML = out;
             }
