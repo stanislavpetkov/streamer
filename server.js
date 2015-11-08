@@ -2,7 +2,7 @@
  * Created by sunny on 15-10-25.
  */
 "use strict";
-
+var clc = require('cli-color');
 var request = require("request");
 
 var express = require('express');
@@ -22,7 +22,7 @@ var stateExit = false;
 
 var appPath = require('path').dirname(Object.keys(require.cache)[0]);
 
-console.log(appPath);
+
 
 
 var processes = {
@@ -63,6 +63,69 @@ var sessionStore = {
 };
 
 
+
+function args_toString(args) {
+    if (args instanceof Object) {
+        var text = "";
+        for (var attr in args) {
+            if (args.hasOwnProperty(attr)) text += stringify(args[attr]) + ' ';
+        }
+
+        return text.slice(0, text.length - 1);
+    }
+}
+
+function stringify(data) {
+    var text = "";
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == data || "object" != typeof data) return data;
+
+    // Handle Date
+    if (data instanceof Date) {
+        return data.toString(); //can change the format
+    }
+
+
+    // Handle Array
+    if (data instanceof Array) {
+        text = "";
+        for (var i = 0, len = data.length; i < len; i++) {
+            text += stringify(data[i]);
+        }
+        return text;
+    }
+
+    // Handle Object
+    if (data instanceof Object) {
+        text = "";
+        for (var attr in data) {
+            if (data.hasOwnProperty(attr)) text += '"' + attr + '":' + stringify(data[attr]) + ', ';
+        }
+
+        return text.slice(0, text.length - 2);
+    }
+
+    return data; //if there is something else
+}
+
+
+function doLog(text) {
+            process.stdout.write(new Date().toISOString() + "\t" + text + "\n");
+}
+
+function error() {
+    doLog(clc.red("ERROR\t") + args_toString(arguments));
+};
+
+function warn() {
+    doLog(clc.yellow("WARN\t") + args_toString(arguments));
+};
+
+function log() {
+    doLog(clc.green("LOG\t") + args_toString(arguments));
+};
+
 function randomStringAsBase64Url(size) {
     return base64url(crypto.randomBytes(size));
 }
@@ -75,14 +138,14 @@ function clean(req)
 }
 
 function restrict(req, res, next) {
-    //console.log(req.session);
+    //log(req.session);
     if ((req.session.sessKey)){
 
         for(var key in sessionStore) {
             var value = sessionStore[key];
             if (value.hasOwnProperty("sessKey")){
                 if (req.session.sessKey == value.sessKey) {
-                    //console.log("SessKey found");
+                    //log("SessKey found");
 
                  /*
                     Session expiration
@@ -146,11 +209,10 @@ app.post('/', function(req, res){
         if (sessionStore.hasOwnProperty(req.body.userName))
         {
             var sess = sessionStore[req.body.userName];
-            //console.log(sess);
-            //console.log(req.body);
+
             if (sess.password == req.body.password)
             {
-                console.log("password is ok");
+               log("password is ok");
                clean(req);
 
                 if (sess.sessKey!="")
@@ -243,19 +305,19 @@ app.get('/reboot', restrict, function (req, res) {
     if (proc.toUpperCase() == "FFSERVER")
     {
         processes.ffserver.child.kill();
-        console.log("rebooting FFSERVER");
+        warn("rebooting FFSERVER");
     }
 
     if (proc.toUpperCase() == "FFM_SOURCE")
     {
         processes.ffmpeg_from_udp.child.kill();
-        console.log("rebooting Source");
+        warn("rebooting Source");
     }
 
     if (proc.toUpperCase() == "FFM_CDN")
     {
         processes.ffmpeg_to_cdn.child.kill();
-        console.log("rebooting CDN feed");
+        warn("rebooting CDN feed");
     }
     res.writeHead(200, {"Content-Type": "application/json"});
     res.write(JSON.stringify({"error":"OK"}));
@@ -270,20 +332,20 @@ function runServer() {
     if (stateExit) {
         return;
     }
-    console.log("Starting Server");
+    log("Starting Server");
     processes.ffserver.child = spawn(processes.ffserver.app, processes.ffserver.params);
 
 
     processes.ffserver.child.stderr.on('data', function (data) {
-        console.log('stderr: ' + data);
+        error('stderr: ' + data);
     });
 
     processes.ffserver.child.stdout.on('data', function (data) {
-        //console.log('stdout: ' + data);
+
     });
 
     processes.ffserver.child.on('exit', function (code) {
-        console.log('server child process exited with code ' + code);
+        error('server child process exited with code ' + code);
         process.nextTick(runServer);
     });
 }
@@ -292,24 +354,24 @@ function runFromSource() {
     if (stateExit) {
         return;
     }
-    console.log("Starting Source to Server");
+    log("Starting Source to Server");
     processes.ffmpeg_from_udp.child = spawn(processes.ffmpeg_from_udp.app, processes.ffmpeg_from_udp.params);
 
 
     processes.ffmpeg_from_udp.child.stderr.on('data', function (data) {
-           console.log('\n##################### ffmpeg_from_udp stderr - START\n' + data+ '\n##################### ffmpeg_from_udp stderr - END\n');
+           error('\n##################### ffmpeg_from_udp stderr - START\n' + data+ '\n##################### ffmpeg_from_udp stderr - END\n');
     });
 
 
     processes.ffmpeg_from_udp.child.stdout.on('data', function (data) {
 
-            console.log('\n##################### ffmpeg_from_udp stdout - START\n' + data+ '\n##################### ffmpeg_from_udp stdout - END\n');
+            log('\n##################### ffmpeg_from_udp stdout - START\n' + data+ '\n##################### ffmpeg_from_udp stdout - END\n');
 
     });
 
 
     processes.ffmpeg_from_udp.child.on('exit', function (code) {
-        console.log('stream to Server child process exited with code ' + code);
+        error('stream to Server child process exited with code ' + code);
         process.nextTick(runFromSource);
     });
 }
@@ -318,7 +380,7 @@ function runToCDN() {
     if (stateExit) {
         return;
     }
-    console.log("Starting Server to CDN");
+    log("Starting Server to CDN");
     processes.ffmpeg_to_cdn.child = spawn(processes.ffmpeg_to_cdn.app, processes.ffmpeg_to_cdn.params);
 
 
@@ -327,7 +389,7 @@ function runToCDN() {
     });
 
     processes.ffmpeg_to_cdn.child.on('exit', function (code) {
-        console.log('stream to CDN child process exited with code ' + code);
+        error('stream to CDN child process exited with code ' + code);
         process.nextTick(runToCDN);
     });
 }
@@ -338,11 +400,11 @@ runToCDN();
 
 process.on('uncaughtException', function (err) {
     // handle the error safely
-    console.log('Exception: ', err);
+    error('Exception: ', err);
 });
 
 process.on('error', function (data) {
-    console.log("Some Error :: ", data);
+    error("Some Error :: ", data);
 });
 
 
@@ -371,7 +433,7 @@ process.on('SIGINT', function () {
         processes.ffmpeg_from_udp.child.kill();
     }
 
-    console.log('Got SIGINT.  ');
+    log('Got SIGINT.  ');
     process.exit(0);
 });
 
