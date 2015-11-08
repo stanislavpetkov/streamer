@@ -1,0 +1,124 @@
+.container {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+.header, .footer {
+    background-color: gainsboro;
+    vertical-align: middle;
+    width: 100%;
+    left: 0;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.header {
+    position: fixed;
+    height: 60px;
+    top: 0;
+}
+
+.footer {
+   /* height: 30px;*/
+    position: fixed;
+    bottom: 0;
+}
+
+.main {
+    background-color: #F0F0F0;
+    position: relative;
+    width: 100%;
+    left: 0;
+    top: 60px;
+    bottom: 51px;
+    overflow: auto;
+    display: inline-block;
+}
+
+tr:nth-child(even) {
+    background: #CCC
+}
+tr:nth-child(odd) {
+    background: #FFF
+}
+
+th {
+    background: cornflowerblue;
+}
+
+.feedcontainer {
+    background-color: #CCC;
+    position: relative;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-right: 10px;
+    width: calc(100% - 20px);
+    display: inline-block;
+}
+.streamscontainer {
+    background-color: #CCC;
+    position: relative;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-right: 10px;
+    width: calc(100% - 20px);
+    display: inline-block;
+}
+
+
+.connectionscontainer {
+    background-color: #CCC;
+    position: relative;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-right: 10px;
+    width: calc(100% - 20px);
+    display: inline-block;
+}
+
+.feeds1 {
+    position: relative;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-right: 10px;
+    background-color: #F0F0F0;
+    display: inline-block;
+    width: calc(100% - 20px);
+}
+
+table {
+    position: relative;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-right: 10px;
+    width: calc(100% - 20px);
+}
+.ra {
+   text-align: right;
+   vertical-align: middle;
+}
+
+.ca {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.feeds {
+    vertical-align: middle;
+    position: relative;
+    height: 100%;
+}
+
+.streams {
+    vertical-align: middle;
+    position: relative;
+    height: 100%;
+}

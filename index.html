@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Streaming Server Statistics</title>
+    <script>
+        // Closure
+        (function() {
+            /**
+             * Decimal adjustment of a number.
+             *
+             * @param {String}  type  The type of adjustment.
+             * @param {Number}  value The number.
+             * @param {Integer} exp   The exponent (the 10 logarithm of the adjustment base).
+             * @returns {Number} The adjusted value.
+             */
+            function decimalAdjust(type, value, exp) {
+                // If the exp is undefined or zero...
+                if (typeof exp === 'undefined' || +exp === 0) {
+                    return Math[type](value);
+                }
+                value = +value;
+                exp = +exp;
+                // If the value is not a number or the exp is not an integer...
+                if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+                    return NaN;
+                }
+                // Shift
+                value = value.toString().split('e');
+                value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+                // Shift back
+                value = value.toString().split('e');
+                return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+            }
+
+            // Decimal round
+            if (!Math.round10) {
+                Math.round10 = function(value, exp) {
+                    return decimalAdjust('round', value, exp);
+                };
+            }
+            // Decimal floor
+            if (!Math.floor10) {
+                Math.floor10 = function(value, exp) {
+                    return decimalAdjust('floor', value, exp);
+                };
+            }
+            // Decimal ceil
+            if (!Math.ceil10) {
+                Math.ceil10 = function(value, exp) {
+                    return decimalAdjust('ceil', value, exp);
+                };
+            }
+        })();
+
+
+        function formatBPS(data)
+        {
+            var symb = ["bps", "Kbps", "Mbps", "Gbps", "Tbps"];
+            if (!isNaN(data))
+            {
+                var x = 0;
+                var z = data;
+
+                while (z>1024)
+                {
+                    x++;
+                    z = z / 1024;
+                }
+
+                return Math.round10(z, -2).toString()+symb[x];
+
+            } else
+            {
+                return "Unknown("+data+")";
+            }
+        }
+
+        function formatBytes(data)
+        {
+            var symb = ["B", "KB", "MB", "GB", "TB", "PB"];
+            if (!isNaN(data))
+            {
+                var x = 0;
+                var z = data;
+
+                while (z>1024)
+                {
+                    x++;
+                    z = z / 1024;
+                }
+
+                return Math.round10(z, -2).toString()+symb[x];
+
+            } else
+            {
+                return "Unknown("+data+")";
+            }
+        }
+        function getData(callback) {
+            var xmlhttp = new XMLHttpRequest();
+            var url = document.location + "data";
+
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    var myData = JSON.parse(xmlhttp.responseText);
+                    myFunction(myData);
+                    callback("done");
+                }
+
+                if (xmlhttp.readyState == 4 && xmlhttp.status != 200) {
+                    callback("err");
+                }
+
+            }
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+
+            function myFunction(data) {
+                var out = "";
+                var i;
+
+                //console.log(data);
+
+
+                for (i = 0; i < data.feeds.length; i++) {
+                    var feed = data.feeds[i];
+                    out+='<p><div class="feeds1">';
+                    out+="<div class='ca'><strong>Feed: "+feed.feedName+"</strong></div>";
+
+                    out += "<table><th>No.</th><th>type</th><th>name</th><th>bitrate</th><th>params</th>";
+                    for(var j=0;j<feed.streams.length;j++) {
+                        var stream = feed.streams[j];
+                        out += '<tr><td class="ra">' + stream.streamNo.toString() + "</td><td  class='ra'>"+stream.type+"</td><td  class='ra'>"+stream.name+"</td><td   class='ra'>"+formatBPS(stream.bitrate*1024)+"</td><td class='ca'>"+stream.params+"</td></tr>";
+                    }
+                    out+="</div>"
+                }
+
+                document.getElementById("feeds").innerHTML = out;
+
+                out = "";
+
+                /*
+                 audioBitRate: "128"
+                 audioCodecName: "aac"
+                 audioCodecNameEx: ""
+                 -feedFileName: "feed1.ffm"
+                 -formatName: "flv"
+                 streamBandwidth: "2628"
+                 streamBytesServed: "2886483786"
+                 streamConnCount: "2"
+                 -streamName: "live.flv"
+                 -streamUrl: "live.flv"
+                 videoBitRate: "2500"
+                 videoCodecName: "libx264"
+                 videoCodecNameEx: ""
+                 */
+
+                out+='<p><div class="feeds1">';
+                out += "<table><th>No.</th><th>Feed name</th><th>Stream name</th><th>Format name</th><th>Bandwidth</th><th>Bytes transmited</th><th>audio codec</th><th>audio bitrate</th><th>video codec</th><th>video bitrate</th>";
+                for (i = 0; i < data.streams.length; i++) {
+                    var stream = data.streams[i];
+
+                    if (stream.feedFileName) {
+                        out += '<tr><td class="ra">' + i.toString() + "</td><td  class='ra'>" + stream.feedFileName + "</td><td  class='ra'><a href='"+data.streamingUrl + stream.streamName + "'>"+stream.streamName+ "</a></td><td  class='ra'>" + stream.formatName + "</td><td   class='ra'>" + formatBPS(stream.streamBandwidth*1024) + "</td><td class='ca'>" + formatBytes(stream.streamBytesServed) + "</td><td class='ca'>" + stream.audioCodecName + "</td><td class='ca'>" + formatBPS(stream.audioBitRate*1024) + "</td><td class='ca'>" + stream.videoCodecName + "</td><td class='ca'>" + formatBPS(stream.videoBitRate*1024) + "</td></tr>";
+                    }
+                }
+                out+="</div>"
+                document.getElementById("streams").innerHTML = out;
+
+
+
+
+                out = "";
+/*
+                bandwidthInUse: "2628"
+                connections: Array[3]
+                connectionsCount: "3"
+                maxBandWidth: "50000"
+                maxConnectionsCount: "1000"
+*/
+
+                /*
+                 IP: "127.0.0.1"
+                 actualDataRate: "0"
+                 bytesTransfered: "0"
+                 connNo: "1"
+                 file: "stat.html"
+                 proto: "HTTP/1.1"
+                 state: "HTTP_WAIT_REQUEST"
+                 targetDataRate: "0"
+                 */
+
+                out+='<p><div class="feeds1">';
+                var bandWidthT = 0;
+                var bandWidthR = 0;
+
+                for (i = 0; i < data.connectionStatus.connections.length; i++) {
+
+                    if (data.connectionStatus.connections[i].state!="RECEIVE_DATA") {
+                        bandWidthT += (data.connectionStatus.connections[i].actualDataRate * 1);
+                    }
+                    else
+                    {
+                        bandWidthR += (data.connectionStatus.connections[i].actualDataRate * 1);
+                    }
+                }
+
+                out+="<div class='ca'><strong>bandwidth in use: Transmit: "+formatBPS(bandWidthT)+", Receive: "+formatBPS(bandWidthR)+" from "+formatBPS(data.connectionStatus.maxBandWidth*1024)+",  connections in use: "+data.connectionStatus.connectionsCount+" from "+ data.connectionStatus.maxConnectionsCount +"</strong></div>";
+                out += "<table><th>No.</th><th>Host</th><th>file</th><th>proto</th><th>state</th><th>target DataRate</th><th>actual DataRate</th><th>bytes Transfered</th>";
+                for (i = 0; i < data.connectionStatus.connections.length; i++) {
+                    var conn = data.connectionStatus.connections[i];
+
+                        out += '<tr><td class="ra">' + i.toString() + "</td><td  class='ra'>" + conn.IP + "</td><td  class='ra'>"+conn.file+"</td><td  class='ra'>" + conn.proto + "</td><td   class='ra'>" + conn.state + "</td><td class='ca'>" + ((conn.targetDataRate<300*1024)?"---":formatBPS(conn.targetDataRate)) + "</td><td class='ca'>" + formatBPS(conn.actualDataRate) + "</td><td class='ca'>" + formatBytes(conn.bytesTransfered) + "</td></tr>";
+
+                }
+                out+="</div>"
+                document.getElementById("connections").innerHTML = out;
+            }
+        }
+
+
+        function refreshData()
+        {
+            getData(function(data){
+                setTimeout(refreshData, 500);
+            });
+
+        }
+
+        setTimeout(refreshData, 500);
+
+    </script>
+
+    <link rel="stylesheet" href="main.css">
+
+</head>
+
+<div class="container">
+
+
+<div class="main">
+
+    <div class="feedcontainer">
+    <div class="ca"><strong><h3>Configured feeds</h3></strong></div>
+    <div id="feeds"></div>
+    </div>
+
+
+    <div class="streamscontainer">
+    <div class="ca"><strong><h3>Configured streams</h3></strong></div>
+    <div id="streams"></div>
+    </div>
+
+
+    <div class="connectionscontainer">
+        <div class="ca"><strong><h3>Current Connections</h3></strong></div>
+        <div id="connections"></div>
+    </div>
+
+</div>
+
+
+
+    <div class="header"><h2>Streaming Server Monitoring</h2></div>
+
+    <div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div>
+</div>
+
+
+
+
+</body>
+</html>
