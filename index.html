@@ -230,6 +230,20 @@
 
         setTimeout(refreshData, 500);
 
+
+
+        function reboot(param)
+        {
+            var xmlhttp = new XMLHttpRequest();
+            var url = document.location + "reboot?process="+param;
+
+            xmlhttp.onreadystatechange = function () {
+
+
+            };
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+        }
     </script>
 
     <link rel="stylesheet" href="main.css">
@@ -258,11 +272,13 @@
         <div id="connections"></div>
     </div>
 
+    <div class="ra"><input type="button" onclick="reboot('ffserver')" value="streaming server reboot"> <input type="button" onclick="reboot('FFM_SOURCE')" value="source feed reboot">    <input type="button" onclick="reboot('FFM_CDN')" value="CDN feed reboot"></div>
 </div>
 
 
 
     <div class="header"><h2>Streaming Server Monitoring</h2></div>
+
 
     <div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div>
 </div>
