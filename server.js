@@ -2,10 +2,18 @@
  * Created by sunny on 15-10-25.
  */
 "use strict";
-var express = require('express');
-var app = express();
+
 var request = require("request");
-var bodyParser = require("body-parser");
+
+var express = require('express');
+var bodyParser = require('body-parser'); // for reading POSTed form data into `req.body`
+var expressSession = require('express-session');
+var cookieParser = require('cookie-parser'); // the session is stored in a cookie, so we use this to parse it
+
+var crypto = require('crypto');
+var base64url = require('base64url');
+
+var app = express();
 
 
 var fs = require("fs");
@@ -15,27 +23,7 @@ var stateExit = false;
 var appPath = require('path').dirname(Object.keys(require.cache)[0]);
 
 console.log(appPath);
-/*
-Sharpen or blur the input video.
-It accepts the following parameters:
-*** luma_msize_x, lx
-Set the luma matrix horizontal size. It must be an odd integer between 3 and 63. The default value is 5.
-*** luma_msize_y, ly
-Set the luma matrix vertical size. It must be an odd integer between 3 and 63. The default value is 5.
-*** luma_amount, la
-Set the luma effect strength. It must be a floating point number, reasonable values lay between -1.5 and 1.5.
-Negative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.
-Default value is 1.0.
-*** chroma_msize_x, cx
-Set the chroma matrix horizontal size. It must be an odd integer between 3 and 63. The default value is 5.
-*** chroma_msize_y, cy
-Set the chroma matrix vertical size. It must be an odd integer between 3 and 63. The default value is 5.
-*** chroma_amount, ca
-Set the chroma effect strength. It must be a floating point number, reasonable values lay between -1.5 and 1.5.
-Negative values will blur the input video, while positive values will sharpen it, a value of zero will disable the effect.
-*** Default value is 0.0.
-All parameters are optional and default to the equivalent of the string ’5:5:1.0:5:5:0.0’.
-*/
+
 
 var processes = {
     "ffserver": {
@@ -57,55 +45,155 @@ var processes = {
     }
 };
 
+// must use cookieParser before expressSession
+app.use(cookieParser());
+
+app.use(expressSession({secret:'somesecrettokenhere',resave: true, saveUninitialized: true, proxy: true}));
 
 app.use(bodyParser.json());
-app.use(express.session({ secret: 'fBsJpq=F8P&Vu*eLSRGh!Rkj97#ahjm+gE4VPxkd9gQGLarZu^+&qd*gn3MRf+GayMUtZ_h&98g$Qe6JYu9k-6t2xV' }));
-
-// Authenticator
-var auth = express.basicAuth(function(user, pass, callback) {
-    var result = (user === 'admin' && pass === 'admin');
-
-    callback(null /* error */, result);
-});
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.use(function (req, res, next) {
-    if (!req.session.authStatus || 'loggedOut' === req.session.authStatus) {
-        req.session.authStatus = 'loggingIn';
+var sessionStore = {
+        admin: {password:"Administrator", sessKey:""},
+        sunny: {password:"Administrator", sessKey:""}
+};
 
-        // cause Express to issue 401 status so browser asks for authentication
-        req.user = false;
-        req.remoteUser = false;
-        if (req.headers && req.headers.authorization) { delete req.headers.authorization; }
+
+function randomStringAsBase64Url(size) {
+    return base64url(crypto.randomBytes(size));
+}
+
+
+function clean(req)
+{
+    delete req.session.userName;
+    delete req.session.password;
+}
+
+function restrict(req, res, next) {
+    console.log(req.session);
+    if ((req.session.sessKey)){
+
+        for(var key in sessionStore) {
+            var value = sessionStore[key];
+            if (value.hasOwnProperty("sessKey")){
+                if (req.session.sessKey == value.sessKey) {
+                    //console.log("SessKey found");
+
+                 /*
+                    Session expiration
+                    if((process.hrtime()[0] - value.lastUsed)>300){ //5minutes
+                        clean(req);
+                        delete req.session.sessKey;
+                        res.redirect('/');
+                        return;
+                    }
+                   */
+
+                    clean(req);
+                    next();
+                    break;
+                } else {
+                    clean(req);
+                    delete req.session.sessKey;
+                    res.redirect('/');
+                    break;
+                }
+            }
+            else {
+                clean(req);
+                delete req.session.sessKey;
+                res.redirect('/');
+                break;
+            }
+        }
+
+    } else
+    {
+        clean(req);
+        delete req.session.sessKey;
+        res.redirect('/');
     }
-    next();
+
+
+}
+
+app.get('/',  function (req, res) {
+    var html = '<form action="/" method="post">' +
+        'Your name: <input type="text" name="userName"><br>' +
+        'Your pass: <input type="text" name="password"><br>'+
+        '<button type="submit">Submit</button>' +
+        '</form>';
+
+
+    res.send(html);
 });
 
-app.use(function (req, res, next) {
-    req.session.authStatus = 'loggedIn';
-    next();
+
+app.post('/', function(req, res){
+    if (req.body.userName) {
+        if (sessionStore.hasOwnProperty(req.body.userName))
+        {
+            var sess = sessionStore[req.body.userName];
+            //console.log(sess);
+            //console.log(req.body);
+            if (sess.password == req.body.password)
+            {
+                console.log("password is ok");
+               clean(req);
+
+                if (sess.sessKey!="")
+                {
+                    sess.sessKey = "";
+                }
+                sess.sessKey = randomStringAsBase64Url(64);
+                sess.lastUsed = process.hrtime()[0]; //seconds since we start
+                req.session.sessKey = sess.sessKey;
+                res.redirect('/index.html');
+
+            } else {
+                delete req.session.sessKey;
+                clean(req);
+                res.redirect('/');
+            }
+        } else {
+            delete req.session.sessKey;
+            clean(req);
+            res.redirect( '/');
+
+        }
+    }
+
 });
-
-
 
 
 app.get('/logout', function (req, res) {
 
-    delete req.session.authStatus;
-    //
-    res.writeHead(200, {"Content-Type": "text/html"});
-    var data = fs.readFileSync("loggedout.html");
-    res.write(data);
-    res.end();
+    if ((req.session.sessKey)){
+
+        for(var key in sessionStore) {
+            var value = sessionStore[key];
+            if (value.hasOwnProperty("sessKey")){
+                if (req.session.sessKey == value.sessKey) {
+                    clean(req);
+                    value.sessKey = "";
+                    break;
+                }
+            }
+        }
+
+    }
+    res.redirect('/');
 });
 
 
-app.get('/', auth, function (req, res) {
-    res.redirect('/index.html');
-});
 
 
-app.get('/index.html',auth, function (req, res) {
+
+app.get('/index.html',restrict, function (req, res) {
+    console.log("index-a ",req.body.sessKey);
+
     var data = fs.readFileSync("index.html");
     res.writeHead(200, {"Content-Type": "text/html"});
     res.write(data);
@@ -120,7 +208,7 @@ app.get('/main.css', function (req, res) {
 });
 
 
-app.get('/data', auth, function (req, res) {
+app.get('/data', restrict, function (req, res) {
     request('http://localhost:8090/stat.html', function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var js = JSON.parse(body);
@@ -137,9 +225,8 @@ app.get('/data', auth, function (req, res) {
 });
 
 
-app.get('/reboot', auth, function (req, res) {
+app.get('/reboot', restrict, function (req, res) {
     var proc = req.query.process;
-
 
     if ((proc == "") && (req.body.hasOwnProperty("process"))) {
         proc = req.body.enumName;

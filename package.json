@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "dependencies":{
     "express":"3.x",
-    "request":"",
-    "body-parser":""
+    "request":"*",
+    "body-parser":"*",
+    "express-session": "*",
+    "cookie-parser": "*",
+    "base64url": "*",
+    "crypto": "*"
+
   }
 }
