@@ -111,7 +111,12 @@ function stringify(data) {
 
 
 function doLog(text) {
-            process.stdout.write(new Date().toISOString() + "\t" + text + "\n");
+    try {
+        process.stdout.write(new Date().toISOString() + "\t" + text + "\n");
+    } catch (e)
+    {
+        //do nothing
+    }
 }
 
 function error() {
