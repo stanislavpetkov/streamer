@@ -267,11 +267,29 @@
             xmlhttp.open("GET", url, true);
             xmlhttp.send();
         }
+
+        function logout(param)
+        {
+            var xmlhttp = new XMLHttpRequest();
+            var url = document.location + "logout";
+
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+                    document.getElementById("container").innerHTML = "";
+                }
+
+            };
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+        }
     </script>
 
     <link rel="stylesheet" href="main.css">
 
 </head>
+
+<body>
 
 <div class="container">
 
@@ -303,11 +321,12 @@
 
 
 
-    <div class="header"><h2>Streaming Server Monitoring</h2></div>
+    <div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"><a href="#" onclick="logout()">logout</a></span></div>
 
 
     <div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div>
 </div>
+    </div>
 
 
 

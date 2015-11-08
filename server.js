@@ -59,6 +59,25 @@ var processes = {
 
 
 app.use(bodyParser.json());
+app.use(express.session({ secret: 'fBsJpq=F8P&Vu*eLSRGh!Rkj97#ahjm+gE4VPxkd9gQGLarZu^+&qd*gn3MRf+GayMUtZ_h&98g$Qe6JYu9k-6t2xV' }));
+
+
+app.use(function (req, res, next) {
+    if (!req.session.authStatus || 'loggedOut' === req.session.authStatus) {
+        req.session.authStatus = 'loggingIn';
+
+        // cause Express to issue 401 status so browser asks for authentication
+        req.user = false;
+        req.remoteUser = false;
+        if (req.headers && req.headers.authorization) { delete req.headers.authorization; }
+    }
+    next();
+});
+
+app.use(function (req, res, next) {
+    req.session.authStatus = 'loggedIn';
+    next();
+});
 
 
 // Authenticator
@@ -72,10 +91,7 @@ app.use(express.basicAuth(function(user, pass, callback) {
 app.get('/logout', function (req, res) {
 
     delete req.session.authStatus;
-    res.send([
-        'You are now logged out.'
-    ].join(''));
-
+    res.redirect('/');
 });
 
 
