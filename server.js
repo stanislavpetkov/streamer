@@ -12,6 +12,8 @@ var fs = require("fs");
 var stateExit = false;
 
 var appPath = require('path').dirname(Object.keys(require.cache)[0]);
+
+console.log(appPath);
 /*
 Sharpen or blur the input video.
 It accepts the following parameters:
