@@ -72,7 +72,7 @@ function clean(req)
 }
 
 function restrict(req, res, next) {
-    console.log(req.session);
+    //console.log(req.session);
     if ((req.session.sessKey)){
 
         for(var key in sessionStore) {
@@ -120,14 +120,21 @@ function restrict(req, res, next) {
 }
 
 app.get('/',  function (req, res) {
-    var html = '<form action="/" method="post">' +
-        'Your name: <input type="text" name="userName"><br>' +
-        'Your pass: <input type="text" name="password"><br>'+
-        '<button type="submit">Submit</button>' +
-        '</form>';
+
+
+
+    var html ="";
+
+    html = "<html><head><meta charset=\"UTF-8\"><title>Streaming Server Login page</title><link rel=\"stylesheet\" href=\"main.css\"></head><body>";
+    html += '<div class="container"><div class="main"><p><p>';
+    html += '<div class="ca"><form action="/" method="post">Login <p><input type="text" name="userName" value="user"><br><input type="text" name="password" value="password"><br><br><button type="submit">Login</button></form></div>'
+    html += '<div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"><a href="/logout">logout</a></span></div>';
+    html += '<div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div></div></div></body></html>';
 
 
     res.send(html);
+
+
 });
 
 
@@ -192,8 +199,6 @@ app.get('/logout', function (req, res) {
 
 
 app.get('/index.html',restrict, function (req, res) {
-    console.log("index-a ",req.body.sessKey);
-
     var data = fs.readFileSync("index.html");
     res.writeHead(200, {"Content-Type": "text/html"});
     res.write(data);
