@@ -5,6 +5,8 @@
     <title>Streaming Server Statistics</title>
     <script>
         // Closure
+        var procs={};
+
         (function() {
             /**
              * Decimal adjustment of a number.
@@ -104,6 +106,13 @@
             xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                     var myData = JSON.parse(xmlhttp.responseText);
+                    if (myData.hasOwnProperty("procs")) {
+                        procs = myData.procs;
+                    } else {
+                        procs = {"FFSERVER": "unknown",
+                                "FFM_SOURCE": "unknown",
+                                "FFM_CDN": "unknown"};
+                    }
                     myFunction(myData);
                     callback("done");
                 }
@@ -216,6 +225,20 @@
                 }
                 out+="</div>"
                 document.getElementById("connections").innerHTML = out;
+
+
+
+
+
+                out='<p><div class="feeds1">';
+
+                out += '<div class="ca"><strong>Process table</strong></div><table>'
+                out += '<th>No</th><th>Process</th><th>Control</th>';
+                out += '<tr><td>1. ('+procs.FFSERVER+') </td><td>Streaming server</td><td><input type="button" onclick="reboot(\'ffserver\')" value="reboot"></td></tr>';
+                out += '<tr><td>2. ('+procs.FFM_SOURCE+') </td><td>Source feed</td><td><input type="button" onclick="reboot(\'FFM_SOURCE\')" value="reboot"></td></tr>';
+                out += '<tr><td>3. ('+procs.FFM_CDN+') </td><td>CDN feed</td><td><input type="button" onclick="reboot(\'FFM_CDN\')" value="reboot"></td></tr></table></div></div>';
+
+                document.getElementById("controls").innerHTML = out;
             }
         }
 
@@ -272,7 +295,10 @@
         <div id="connections"></div>
     </div>
 
-    <div class="ra"><input type="button" onclick="reboot('ffserver')" value="streaming server reboot"> <input type="button" onclick="reboot('FFM_SOURCE')" value="source feed reboot">    <input type="button" onclick="reboot('FFM_CDN')" value="CDN feed reboot"></div>
+    <div class="controlcontainer">
+        <div class="ca"><strong><h3>Processes control</h3></strong></div>
+    <div id="controls"></div>
+
 </div>
 
 
