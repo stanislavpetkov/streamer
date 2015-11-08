@@ -60,10 +60,14 @@ var processes = {
 
 app.use(bodyParser.json());
 
-var auth = express.basicAuth(function(user, pass, callback) {
-    var result = (user === 'test' && pass === '1234');
+
+// Authenticator
+app.use(express.basicAuth(function(user, pass, callback) {
+    var result = (user === 'testUser' && pass === 'testPass');
+    console.log("USER PASS");
     callback(null /* error */, result);
-});
+}));
+
 
 
 app.get('/', function (req, res) {
