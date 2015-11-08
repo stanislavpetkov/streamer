@@ -61,6 +61,13 @@ var processes = {
 app.use(bodyParser.json());
 app.use(express.session({ secret: 'fBsJpq=F8P&Vu*eLSRGh!Rkj97#ahjm+gE4VPxkd9gQGLarZu^+&qd*gn3MRf+GayMUtZ_h&98g$Qe6JYu9k-6t2xV' }));
 
+// Authenticator
+var auth = express.basicAuth(function(user, pass, callback) {
+    var result = (user === 'admin' && pass === 'admin');
+
+    callback(null /* error */, result);
+});
+
 
 app.use(function (req, res, next) {
     if (!req.session.authStatus || 'loggedOut' === req.session.authStatus) {
@@ -80,45 +87,40 @@ app.use(function (req, res, next) {
 });
 
 
-// Authenticator
-app.use(express.basicAuth(function(user, pass, callback) {
-    var result = (user === 'admin' && pass === 'admin');
-
-    callback(null /* error */, result);
-}));
 
 
 app.get('/logout', function (req, res) {
 
     delete req.session.authStatus;
-    res.redirect('/');
-});
-
-
-app.get('/', function (req, res) {
-    var data = fs.readFileSync("index.html");
-    res.writeHead("content-type", "text/html");
+    //
+    res.writeHead(200, {"Content-Type": "text/html"});
+    var data = fs.readFileSync("loggedout.html");
     res.write(data);
     res.end();
 });
 
 
-app.get('/index.html', function (req, res) {
+app.get('/', auth, function (req, res) {
+    res.redirect('/index.html');
+});
+
+
+app.get('/index.html',auth, function (req, res) {
     var data = fs.readFileSync("index.html");
-    res.writeHead("content-type", "text/html");
+    res.writeHead(200, {"Content-Type": "text/html"});
     res.write(data);
     res.end();
 });
 
 app.get('/main.css', function (req, res) {
     var data = fs.readFileSync("main.css");
-    res.writeHead("content-type", "text/css");
+    res.writeHead(200, {"Content-Type": "text/css"});
     res.write(data);
     res.end();
 });
 
 
-app.get('/data', function (req, res) {
+app.get('/data', auth, function (req, res) {
     request('http://localhost:8090/stat.html', function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var js = JSON.parse(body);
@@ -135,7 +137,7 @@ app.get('/data', function (req, res) {
 });
 
 
-app.get('/reboot', function (req, res) {
+app.get('/reboot', auth, function (req, res) {
     var proc = req.query.process;
 
 
