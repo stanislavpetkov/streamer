@@ -42,7 +42,13 @@ var processes = {
         "app": "ffmpeg",
         "params": ['-re', '-y', '-v','16','-i', 'http://localhost:8090/live.flv?fifo_size=1000000&overrun_nonfatal=1', '-c', 'copy', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@pri.cdn.bg:2013/fls/test?fifo_size=1000000&overrun_nonfatal=1'],
         "child": null
+    },
+    "ffmpeg_to_thumb": {
+        "app": "ffmpeg",
+        "params": ['-re', '-y', '-i', 'http://localhost:8090/live.ts?fifo_size=1000000&overrun_nonfatal=1', '-vf','\"select=\'eq(pict_type,PICT_TYPE_I)\'\"',"-vsync","vfr", "-s","97x55", '-f', 'image2', "-updatefirst","1", 'thumb.png'],
+        "child": null
     }
+
 };
 
 // must use cookieParser before expressSession
@@ -286,7 +292,8 @@ app.get('/data', restrict, function (req, res) {
             js.procs = {"FFSERVER": processes.ffserver.child.pid,
                 "FFM_SOURCE": processes.ffmpeg_from_udp.child.pid,
                 "FFM_CDN": processes.ffmpeg_to_cdn.child.pid,
-                "JAVASCRIPT": process.pid };
+                "JAVASCRIPT": process.pid ,
+                "FFM_THUMB": processes.ffmpeg_to_thumb.child.pid};
 
             res.writeHead(200, {"Content-Type": "application/json"});
             res.write(JSON.stringify(js));
@@ -335,6 +342,13 @@ app.get('/reboot', restrict, function (req, res) {
         processes.ffmpeg_to_cdn.child.kill();
         warn("rebooting CDN feed");
     }
+
+    if (proc.toUpperCase() == "FFM_THUMB")
+    {
+        processes.ffmpeg_to_thumb.child.kill();
+        warn("rebooting THUMB feed");
+    }
+
     res.writeHead(200, {"Content-Type": "application/json"});
     res.write(JSON.stringify({"error":"OK"}));
 
@@ -410,9 +424,31 @@ function runToCDN() {
     });
 }
 
+
+function runThumb() {
+    if (stateExit) {
+        return;
+    }
+    log("Starting Thumbnail Generator");
+    processes.ffmpeg_to_thumb.child = spawn(processes.ffmpeg_to_thumb.app, processes.ffmpeg_to_thumb.params);
+
+
+    processes.ffmpeg_to_thumb.child.stderr.on('data', function (data) {
+        //console.log('stderr: ' + data);
+    });
+
+    processes.ffmpeg_to_thumb.child.on('exit', function (code) {
+        error('Thumbnail Generator process exited with code ' + code);
+        process.nextTick(runThumb);
+    });
+}
+
+
+
 runServer();
 runFromSource();
 runToCDN();
+runThumb();
 
 process.on('uncaughtException', function (err) {
     // handle the error safely
@@ -434,6 +470,11 @@ process.on('exit', function (data) {
     if (processes.ffmpeg_from_udp.child) {
         processes.ffmpeg_from_udp.child.kill();
     }
+    if (processes.ffmpeg_to_thumb.child) {
+        processes.ffmpeg_to_thumb.child.kill();
+    }
+
+
 
 });
 
@@ -447,6 +488,9 @@ process.on('SIGINT', function () {
     }
     if (processes.ffmpeg_from_udp.child) {
         processes.ffmpeg_from_udp.child.kill();
+    }
+    if (processes.ffmpeg_to_thumb.child) {
+        processes.ffmpeg_to_thumb.child.kill();
     }
 
     log('Got SIGINT.  ');

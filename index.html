@@ -241,7 +241,7 @@
                 document.getElementById("proc2").innerHTML = procs.FFM_SOURCE;
                 document.getElementById("proc3").innerHTML = procs.FFM_CDN;
                 document.getElementById("proc4").innerHTML = procs.JAVASCRIPT;
-
+                document.getElementById("proc5").innerHTML = procs.FFM_THUMB;
 
                 //out='<p><div class="feeds1">';
 
@@ -291,7 +291,7 @@
                 newImage.src = "/thumb.png?time=" + new Date();
             }
 
-            setTimeout(updateImage, 1000);
+            setTimeout(updateImage, 500);
         }
         updateImage();
     </script>
@@ -356,6 +356,12 @@
                             <td>Web Server</td>
                             <td><input type="button" onclick="reboot('JAVASCRIPT')" value="reboot"></td>
                         </tr>
+                        <tr>
+                            <td class="ca" id="proc5"></td>
+                            <td>Thumbnail generator</td>
+                            <td><input type="button" onclick="reboot('FFM_THUMB')" value="reboot"></td>
+                        </tr>
+
                     </table>
                 </div>
             </div>
