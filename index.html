@@ -249,18 +249,20 @@
                 document.getElementById("connections").innerHTML = out;
 
 
+                document.getElementById("proc1").innerHTML = procs.FFSERVER;
+                document.getElementById("proc1").innerHTML = procs.FFM_SOURCE;
+                document.getElementById("proc1").innerHTML = procs.FFM_CDN;
 
 
+                //out='<p><div class="feeds1">';
 
-                out='<p><div class="feeds1">';
+//                out += '<div class="ca"><strong>Process table</strong></div><table>'
+  //              out += '<th>PID</th><th>Process</th><th>Control</th>';
+    //            out += '<tr><td class="ca">'+procs.FFSERVER+'</td><td>Streaming server</td><td><input type="button" onclick="reboot(\'ffserver\')" value="reboot"></td></tr>';
+      //          out += '<tr><td class="ca">'+procs.FFM_SOURCE+'</td><td>Source feed</td><td><input type="button" onclick="reboot(\'FFM_SOURCE\')" value="reboot"></td></tr>';
+        //        out += '<tr><td class="ca">'+procs.FFM_CDN+'</td><td>CDN feed</td><td><input type="button" onclick="reboot(\'FFM_CDN\')" value="reboot"></td></tr></table></div></div>';
 
-                out += '<div class="ca"><strong>Process table</strong></div><table>'
-                out += '<th>PID</th><th>Process</th><th>Control</th>';
-                out += '<tr><td class="ca">'+procs.FFSERVER+'</td><td>Streaming server</td><td><input type="button" onclick="reboot(\'ffserver\')" value="reboot"></td></tr>';
-                out += '<tr><td class="ca">'+procs.FFM_SOURCE+'</td><td>Source feed</td><td><input type="button" onclick="reboot(\'FFM_SOURCE\')" value="reboot"></td></tr>';
-                out += '<tr><td class="ca">'+procs.FFM_CDN+'</td><td>CDN feed</td><td><input type="button" onclick="reboot(\'FFM_CDN\')" value="reboot"></td></tr></table></div></div>';
-
-                document.getElementById("controls").innerHTML = out;
+            //    document.getElementById("controls").innerHTML = out;
             }
         }
 
@@ -323,7 +325,18 @@
 
     <div class="controlcontainer">
         <div class="ca"><strong><h3>Processes control</h3></strong></div>
-    <div id="controls"></div>
+    <div id="controls">
+
+        <p><div class="feeds1">;
+
+        <div class="ca"><strong>Process table</strong></div><table>
+            <th>PID</th><th>Process</th><th>Control</th>
+            <tr><td class="ca" id="proc1"></td><td>Streaming server</td><td><input type="button" onclick="reboot('ffserver')" value="reboot"></td></tr>
+            <tr><td class="ca" id="proc2">'+procs.FFM_SOURCE+'</td><td>Source feed</td><td><input type="button" onclick="reboot('FFM_SOURCE')" value="reboot"></td></tr>
+            <tr><td class="ca" id="proc3">'+procs.FFM_CDN+'</td><td>CDN feed</td><td><input type="button" onclick="reboot('FFM_CDN')" value="reboot"></td></tr></table></div></div>
+
+
+    </div>
 
 </div>
 
