@@ -144,6 +144,7 @@ function clean(req)
 
 function restrict(req, res, next) {
     //log(req.session);
+    var found = false;
     if ((req.session.sessKey)){
 
         for(var key in sessionStore) {
@@ -161,23 +162,17 @@ function restrict(req, res, next) {
                         return;
                     }
                    */
-
+                    found = true;
                     clean(req);
                     next();
                     break;
-                } else {
-                    clean(req);
-                    delete req.session.sessKey;
-                    res.redirect('/');
-                    break;
                 }
             }
-            else {
-                clean(req);
-                delete req.session.sessKey;
-                res.redirect('/');
-                break;
-            }
+        }
+        if (!found) {
+            clean(req);
+            delete req.session.sessKey;
+            res.redirect('/');
         }
 
     } else
