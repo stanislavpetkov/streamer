@@ -295,6 +295,13 @@ app.get('/data', restrict, function (req, res) {
     });
 });
 
+//ffmpeg -i http://localhost:8090/live.ts  -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vfr -f image2 -updatefirst 1 thumb.png
+app.get('/thumb.png', function(req,res){
+    var data = fs.readFileSync("thumb.png");
+    res.writeHead(200, {"Content-Type": "image/png"});
+    res.write(data);
+    res.end();
+});
 
 app.get('/reboot', restrict, function (req, res) {
     var proc = req.query.process;
