@@ -434,7 +434,7 @@ function runThumb() {
 
 
     processes.ffmpeg_to_thumb.child.stderr.on('data', function (data) {
-        //console.log('stderr: ' + data);
+        console.log('stderr: ' + data);
     });
 
     processes.ffmpeg_to_thumb.child.on('exit', function (code) {
