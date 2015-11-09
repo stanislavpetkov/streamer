@@ -302,6 +302,13 @@ app.get('/reboot', restrict, function (req, res) {
         proc = req.body.enumName;
     }
 
+    if (proc.toUpperCase() == "JAVASCRIPT")
+    {
+        process.exit(1);
+        warn("rebooting SELF");
+    }
+
+
     if (proc.toUpperCase() == "FFSERVER")
     {
         processes.ffserver.child.kill();
