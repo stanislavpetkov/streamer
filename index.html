@@ -279,6 +279,22 @@
         }
 
 
+
+        var newImage = new Image();
+        newImage.src = "/thumb.png";
+
+        function updateImage()
+        {
+            if(newImage.complete) {
+                document.getElementById("img1").src = newImage.src;
+                newImage = new Image();
+                number++;
+                newImage.src = "/thumb.png?time=" + new Date();
+            }
+
+            setTimeout(updateImage, 1000);
+        }
+        updateImage();
     </script>
 
     <link rel="stylesheet" href="main.css">
@@ -351,7 +367,7 @@
     </div>
 
 
-    <div class="header"><h2>Streaming Server Monitoring</h2> <span class="rar"><img src='/thumb.png'></span> <span class="rar"><a href="/logout"">logout</a></span></div>
+    <div class="header"><h2>Streaming Server Monitoring</h2> <span class="rar" id="img1"></span> <span class="rar"><a href="/logout"">logout</a></span></div>
 
 
     <div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div>
