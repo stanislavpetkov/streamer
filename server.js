@@ -45,7 +45,7 @@ var processes = {
     },
     "ffmpeg_to_thumb": {
         "app": "ffmpeg",
-        "params": ['-re', '-y', '-i', 'http://localhost:8090/live.ts?fifo_size=1000000&overrun_nonfatal=1', '-vf','\"select=\'eq(pict_type,PICT_TYPE_I)\'\"',"-vsync","vfr", "-s","97x55", '-f', 'image2', "-updatefirst","1", 'thumb.png'],
+        "params": ['-re', '-y', '-i', 'http://localhost:8090/live.ts?fifo_size=1000000&overrun_nonfatal=1', '-vf','fps=2',"-vsync","vfr", "-s","97x55", '-f', 'image2', "-updatefirst","1", 'thumb.png'],
         "child": null
     }
 
@@ -302,7 +302,7 @@ app.get('/data', restrict, function (req, res) {
     });
 });
 
-//ffmpeg -i http://localhost:8090/live.ts  -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vfr -f image2 -updatefirst 1 thumb.png
+
 app.get('/thumb.png', function(req,res){
     var data = fs.readFileSync("thumb.png");
     res.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
