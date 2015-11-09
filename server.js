@@ -298,7 +298,8 @@ app.get('/data', restrict, function (req, res) {
 //ffmpeg -i http://localhost:8090/live.ts  -vf "select='eq(pict_type,PICT_TYPE_I)'" -vsync vfr -f image2 -updatefirst 1 thumb.png
 app.get('/thumb.png', function(req,res){
     var data = fs.readFileSync("thumb.png");
-    res.writeHead(200, {"Content-Type": "image/png"});
+    res.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
+
     res.write(data);
     res.end();
 });
