@@ -5,9 +5,9 @@
     <title>Streaming Server Statistics</title>
     <script>
         // Closure
-        var procs={};
+        var procs = {};
 
-        (function() {
+        (function () {
             /**
              * Decimal adjustment of a number.
              *
@@ -37,19 +37,19 @@
 
             // Decimal round
             if (!Math.round10) {
-                Math.round10 = function(value, exp) {
+                Math.round10 = function (value, exp) {
                     return decimalAdjust('round', value, exp);
                 };
             }
             // Decimal floor
             if (!Math.floor10) {
-                Math.floor10 = function(value, exp) {
+                Math.floor10 = function (value, exp) {
                     return decimalAdjust('floor', value, exp);
                 };
             }
             // Decimal ceil
             if (!Math.ceil10) {
-                Math.ceil10 = function(value, exp) {
+                Math.ceil10 = function (value, exp) {
                     return decimalAdjust('ceil', value, exp);
                 };
             }
@@ -59,54 +59,45 @@
         function hostnameFromURL(url) {
             var a = document.createElement('a');
             a.href = url;
-            return a.protocol + '//' + a.hostname+':'+ a.port+'/';
+            return a.protocol + '//' + a.hostname + ':' + a.port + '/';
         }
 
 
-        function formatBPS(data)
-        {
+        function formatBPS(data) {
             var symb = ["bps", "Kbps", "Mbps", "Gbps", "Tbps"];
-            if (!isNaN(data))
-            {
+            if (!isNaN(data)) {
                 var x = 0;
                 var z = data;
 
-                while (z>1024)
-                {
+                while (z > 1024) {
                     x++;
                     z = z / 1024;
                 }
 
-                return Math.round10(z, -2).toString()+symb[x];
+                return Math.round10(z, -2).toString() + symb[x];
 
-            } else
-            {
-                return "Unknown("+data+")";
+            } else {
+                return "Unknown(" + data + ")";
             }
         }
 
-        function formatBytes(data)
-        {
+        function formatBytes(data) {
             var symb = ["B", "KB", "MB", "GB", "TB", "PB"];
-            if (!isNaN(data))
-            {
+            if (!isNaN(data)) {
                 var x = 0;
                 var z = data;
 
-                while (z>1024)
-                {
+                while (z > 1024) {
                     x++;
                     z = z / 1024;
                 }
 
-                return Math.round10(z, -2).toString()+symb[x];
+                return Math.round10(z, -2).toString() + symb[x];
 
-            } else
-            {
-                return "Unknown("+data+")";
+            } else {
+                return "Unknown(" + data + ")";
             }
         }
-
 
 
         function getData(callback) {
@@ -118,12 +109,10 @@
 
                     var myData;
 
-                    try
-                    {
+                    try {
                         myData = JSON.parse(xmlhttp.responseText);
                     }
-                    catch(e)
-                    {
+                    catch (e) {
                         // not and json
                         document.location = "/";
                     }
@@ -131,9 +120,11 @@
                     if (myData.hasOwnProperty("procs")) {
                         procs = myData.procs;
                     } else {
-                        procs = {"FFSERVER": "unknown",
-                                "FFM_SOURCE": "unknown",
-                                "FFM_CDN": "unknown"};
+                        procs = {
+                            "FFSERVER": "unknown",
+                            "FFM_SOURCE": "unknown",
+                            "FFM_CDN": "unknown"
+                        };
                     }
                     myFunction(myData);
                     callback("done");
@@ -156,15 +147,15 @@
 
                 for (i = 0; i < data.feeds.length; i++) {
                     var feed = data.feeds[i];
-                    out+='<p><div class="feeds1">';
-                    out+="<div class='ca'><strong>Feed: "+feed.feedName+"</strong></div>";
+                    out += '<p><div class="feeds1">';
+                    out += "<div class='ca'><strong>Feed: " + feed.feedName + "</strong></div>";
 
                     out += "<table><th>No.</th><th>type</th><th>name</th><th>bitrate</th><th>params</th>";
-                    for(var j=0;j<feed.streams.length;j++) {
+                    for (var j = 0; j < feed.streams.length; j++) {
                         var stream = feed.streams[j];
-                        out += '<tr><td class="ra">' + stream.streamNo.toString() + "</td><td  class='ra'>"+stream.type+"</td><td  class='ra'>"+stream.name+"</td><td   class='ra'>"+formatBPS(stream.bitrate*1024)+"</td><td class='ca'>"+stream.params+"</td></tr>";
+                        out += '<tr><td class="ra">' + stream.streamNo.toString() + "</td><td  class='ra'>" + stream.type + "</td><td  class='ra'>" + stream.name + "</td><td   class='ra'>" + formatBPS(stream.bitrate * 1024) + "</td><td class='ca'>" + stream.params + "</td></tr>";
                     }
-                    out+="</div>"
+                    out += "</div>"
                 }
 
                 document.getElementById("feeds").innerHTML = out;
@@ -187,29 +178,27 @@
                  videoCodecNameEx: ""
                  */
 
-                out+='<p><div class="feeds1">';
+                out += '<p><div class="feeds1">';
                 out += "<table><th>No.</th><th>Feed name</th><th>Stream name</th><th>Format name</th><th>Bandwidth</th><th>Bytes transmited</th><th>audio codec</th><th>audio bitrate</th><th>video codec</th><th>video bitrate</th>";
                 for (i = 0; i < data.streams.length; i++) {
                     var stream = data.streams[i];
 
                     if (stream.feedFileName) {
-                        out += '<tr><td class="ra">' + i.toString() + "</td><td  class='ra'>" + stream.feedFileName + "</td><td  class='ra'><a href='"+data.streamingUrl + stream.streamName + "'>"+stream.streamName+ "</a></td><td  class='ra'>" + stream.formatName + "</td><td   class='ra'>" + formatBPS(stream.streamBandwidth*1024) + "</td><td class='ca'>" + formatBytes(stream.streamBytesServed) + "</td><td class='ca'>" + stream.audioCodecName + "</td><td class='ca'>" + formatBPS(stream.audioBitRate*1024) + "</td><td class='ca'>" + stream.videoCodecName + "</td><td class='ca'>" + formatBPS(stream.videoBitRate*1024) + "</td></tr>";
+                        out += '<tr><td class="ra">' + i.toString() + "</td><td  class='ra'>" + stream.feedFileName + "</td><td  class='ra'><a href='" + data.streamingUrl + stream.streamName + "'>" + stream.streamName + "</a></td><td  class='ra'>" + stream.formatName + "</td><td   class='ra'>" + formatBPS(stream.streamBandwidth * 1024) + "</td><td class='ca'>" + formatBytes(stream.streamBytesServed) + "</td><td class='ca'>" + stream.audioCodecName + "</td><td class='ca'>" + formatBPS(stream.audioBitRate * 1024) + "</td><td class='ca'>" + stream.videoCodecName + "</td><td class='ca'>" + formatBPS(stream.videoBitRate * 1024) + "</td></tr>";
                     }
                 }
-                out+="</div>"
+                out += "</div>"
                 document.getElementById("streams").innerHTML = out;
 
 
-
-
                 out = "";
-/*
-                bandwidthInUse: "2628"
-                connections: Array[3]
-                connectionsCount: "3"
-                maxBandWidth: "50000"
-                maxConnectionsCount: "1000"
-*/
+                /*
+                 bandwidthInUse: "2628"
+                 connections: Array[3]
+                 connectionsCount: "3"
+                 maxBandWidth: "50000"
+                 maxConnectionsCount: "1000"
+                 */
 
                 /*
                  IP: "127.0.0.1"
@@ -222,30 +211,29 @@
                  targetDataRate: "0"
                  */
 
-                out+='<p><div class="feeds1">';
+                out += '<p><div class="feeds1">';
                 var bandWidthT = 0;
                 var bandWidthR = 0;
 
                 for (i = 0; i < data.connectionStatus.connections.length; i++) {
 
-                    if (data.connectionStatus.connections[i].state!="RECEIVE_DATA") {
+                    if (data.connectionStatus.connections[i].state != "RECEIVE_DATA") {
                         bandWidthT += (data.connectionStatus.connections[i].actualDataRate * 1);
                     }
-                    else
-                    {
+                    else {
                         bandWidthR += (data.connectionStatus.connections[i].actualDataRate * 1);
                     }
                 }
 
-                out+="<div class='ca'><strong>bandwidth in use: Transmit: "+formatBPS(bandWidthT)+", Receive: "+formatBPS(bandWidthR)+" from "+formatBPS(data.connectionStatus.maxBandWidth*1024)+",  connections in use: "+data.connectionStatus.connectionsCount+" from "+ data.connectionStatus.maxConnectionsCount +"</strong></div>";
+                out += "<div class='ca'><strong>bandwidth in use: Transmit: " + formatBPS(bandWidthT) + ", Receive: " + formatBPS(bandWidthR) + " from " + formatBPS(data.connectionStatus.maxBandWidth * 1024) + ",  connections in use: " + data.connectionStatus.connectionsCount + " from " + data.connectionStatus.maxConnectionsCount + "</strong></div>";
                 out += "<table><th>No.</th><th>Host</th><th>file</th><th>proto</th><th>state</th><th>target DataRate</th><th>actual DataRate</th><th>bytes Transfered</th>";
                 for (i = 0; i < data.connectionStatus.connections.length; i++) {
                     var conn = data.connectionStatus.connections[i];
 
-                        out += '<tr><td class="ra">' + i.toString() + "</td><td  class='ra'>" + conn.IP + "</td><td  class='ra'>"+conn.file+"</td><td  class='ra'>" + conn.proto + "</td><td   class='ra'>" + conn.state + "</td><td class='ca'>" + ((conn.targetDataRate<300*1024)?"---":formatBPS(conn.targetDataRate)) + "</td><td class='ca'>" + formatBPS(conn.actualDataRate) + "</td><td class='ca'>" + formatBytes(conn.bytesTransfered) + "</td></tr>";
+                    out += '<tr><td class="ra">' + i.toString() + "</td><td  class='ra'>" + conn.IP + "</td><td  class='ra'>" + conn.file + "</td><td  class='ra'>" + conn.proto + "</td><td   class='ra'>" + conn.state + "</td><td class='ca'>" + ((conn.targetDataRate < 300 * 1024) ? "---" : formatBPS(conn.targetDataRate)) + "</td><td class='ca'>" + formatBPS(conn.actualDataRate) + "</td><td class='ca'>" + formatBytes(conn.bytesTransfered) + "</td></tr>";
 
                 }
-                out+="</div>"
+                out += "</div>"
                 document.getElementById("connections").innerHTML = out;
 
 
@@ -257,19 +245,18 @@
                 //out='<p><div class="feeds1">';
 
 //                out += '<div class="ca"><strong>Process table</strong></div><table>'
-  //              out += '<th>PID</th><th>Process</th><th>Control</th>';
-    //            out += '<tr><td class="ca">'+procs.FFSERVER+'</td><td>Streaming server</td><td><input type="button" onclick="reboot(\'ffserver\')" value="reboot"></td></tr>';
-      //          out += '<tr><td class="ca">'+procs.FFM_SOURCE+'</td><td>Source feed</td><td><input type="button" onclick="reboot(\'FFM_SOURCE\')" value="reboot"></td></tr>';
-        //        out += '<tr><td class="ca">'+procs.FFM_CDN+'</td><td>CDN feed</td><td><input type="button" onclick="reboot(\'FFM_CDN\')" value="reboot"></td></tr></table></div></div>';
+                //              out += '<th>PID</th><th>Process</th><th>Control</th>';
+                //            out += '<tr><td class="ca">'+procs.FFSERVER+'</td><td>Streaming server</td><td><input type="button" onclick="reboot(\'ffserver\')" value="reboot"></td></tr>';
+                //          out += '<tr><td class="ca">'+procs.FFM_SOURCE+'</td><td>Source feed</td><td><input type="button" onclick="reboot(\'FFM_SOURCE\')" value="reboot"></td></tr>';
+                //        out += '<tr><td class="ca">'+procs.FFM_CDN+'</td><td>CDN feed</td><td><input type="button" onclick="reboot(\'FFM_CDN\')" value="reboot"></td></tr></table></div></div>';
 
-            //    document.getElementById("controls").innerHTML = out;
+                //    document.getElementById("controls").innerHTML = out;
             }
         }
 
 
-        function refreshData()
-        {
-            getData(function(data){
+        function refreshData() {
+            getData(function (data) {
                 setTimeout(refreshData, 500);
             });
 
@@ -278,11 +265,9 @@
         setTimeout(refreshData, 500);
 
 
-
-        function reboot(param)
-        {
+        function reboot(param) {
             var xmlhttp = new XMLHttpRequest();
-            var url = hostnameFromURL(document.location) + "reboot?process="+param;
+            var url = hostnameFromURL(document.location) + "reboot?process=" + param;
 
             xmlhttp.onreadystatechange = function () {
 
@@ -304,42 +289,59 @@
 <div class="container">
 
 
-<div class="main">
+    <div class="main">
 
-    <div class="feedcontainer">
-    <div class="ca"><strong><h3>Configured feeds</h3></strong></div>
-    <div id="feeds"></div>
+        <div class="feedcontainer">
+            <div class="ca"><strong><h3>Configured feeds</h3></strong></div>
+            <div id="feeds"></div>
+        </div>
+
+
+        <div class="streamscontainer">
+            <div class="ca"><strong><h3>Configured streams</h3></strong></div>
+            <div id="streams"></div>
+        </div>
+
+
+        <div class="connectionscontainer">
+            <div class="ca"><strong><h3>Current Connections</h3></strong></div>
+            <div id="connections"></div>
+        </div>
+
+        <div class="controlcontainer">
+            <div class="ca"><strong><h3>Processes control</h3></strong></div>
+            <div id="controls">
+                <p>
+
+                <div class="feeds1">
+                    <div class="ca"><strong>Process table</strong></div>
+                    <table>
+                        <th>PID</th>
+                        <th>Process</th>
+                        <th>Control</th>
+                        <tr>
+                            <td class="ca" id="proc1"></td>
+                            <td>Streaming server</td>
+                            <td><input type="button" onclick="reboot('ffserver')" value="reboot"></td>
+                        </tr>
+                        <tr>
+                            <td class="ca" id="proc2"></td>
+                            <td>Source feed</td>
+                            <td><input type="button" onclick="reboot('FFM_SOURCE')" value="reboot"></td>
+                        </tr>
+                        <tr>
+                            <td class="ca" id="proc3"></td>
+                            <td>CDN feed</td>
+                            <td><input type="button" onclick="reboot('FFM_CDN')" value="reboot"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+
     </div>
-
-
-    <div class="streamscontainer">
-    <div class="ca"><strong><h3>Configured streams</h3></strong></div>
-    <div id="streams"></div>
-    </div>
-
-
-    <div class="connectionscontainer">
-        <div class="ca"><strong><h3>Current Connections</h3></strong></div>
-        <div id="connections"></div>
-    </div>
-
-    <div class="controlcontainer">
-        <div class="ca"><strong><h3>Processes control</h3></strong></div>
-    <div id="controls">
-
-        <p><div class="feeds1">;
-
-        <div class="ca"><strong>Process table</strong></div><table>
-            <th>PID</th><th>Process</th><th>Control</th>
-            <tr><td class="ca" id="proc1"></td><td>Streaming server</td><td><input type="button" onclick="reboot('ffserver')" value="reboot"></td></tr>
-            <tr><td class="ca" id="proc2"></td><td>Source feed</td><td><input type="button" onclick="reboot('FFM_SOURCE')" value="reboot"></td></tr>
-            <tr><td class="ca" id="proc3"></td><td>CDN feed</td><td><input type="button" onclick="reboot('FFM_CDN')" value="reboot"></td></tr></table></div></div>
-
-
-    </div>
-
-</div>
-
 
 
     <div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"><a href="/logout"">logout</a></span></div>
@@ -347,9 +349,7 @@
 
     <div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div>
 </div>
-    </div>
-
-
+</div>
 
 
 </body>
