@@ -285,7 +285,8 @@ app.get('/data', restrict, function (req, res) {
             js.streamingUrl = 'http://'+req.socket.localAddress+':8090/';
             js.procs = {"FFSERVER": processes.ffserver.child.pid,
                 "FFM_SOURCE": processes.ffmpeg_from_udp.child.pid,
-                "FFM_CDN": processes.ffmpeg_to_cdn.child.pid};
+                "FFM_CDN": processes.ffmpeg_to_cdn.child.pid,
+                "JAVASCRIPT": process.pid };
 
             res.writeHead(200, {"Content-Type": "application/json"});
             res.write(JSON.stringify(js));
