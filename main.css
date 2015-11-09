@@ -126,6 +126,15 @@ table {
     display: inline-block;
 }
 
+.la {
+    text-align: left;
+    vertical-align: middle;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    display: inline-block;
+}
+
 .ca {
     text-align: center;
     vertical-align: middle;
