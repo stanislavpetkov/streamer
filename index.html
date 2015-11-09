@@ -289,7 +289,7 @@
                 document.getElementById("img1").src = newImage.src;
                 newImage = new Image();
                 number++;
-                newImage.src = "/thumb.png";
+                newImage.src = "/thumb.png?time=" + new Date();
             }
 
             setTimeout(updateImage, 1000);
