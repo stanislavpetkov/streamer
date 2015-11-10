@@ -45,7 +45,7 @@ var processes = {
     },
     "ffmpeg_to_thumb": {
         "app": "ffmpeg",
-        "params": ['-re', '-y', '-i', 'http://localhost:8090/live.ts?fifo_size=1000000&overrun_nonfatal=1', '-vf','fps=2',"-vsync","vfr", "-s","97x55", '-f', 'image2', "-updatefirst","1", 'thumb.png'],
+        "params": ['-re', '-y', '-i', 'http://localhost:8090/live.ts?fifo_size=1000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","97x55", '-f', 'image2', "-updatefirst","1", 'thumb.png'],
         "child": null
     }
 
