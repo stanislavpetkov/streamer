@@ -200,7 +200,7 @@ app.get('/',  function (req, res) {
     html = "<html><head><meta charset=\"UTF-8\"><title>Streaming Server Login page</title><link rel=\"stylesheet\" href=\"main.css\"></head><body>";
     html += '<div class="container"><div class="main"><p><p>';
     html += '<div class="ca"><form action="/" method="post">Login <p><input type="text" name="userName" value="user"><br><input type="password" name="password" value="password"><br><br><button type="submit">Login</button></form></div>'
-    html += '<div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"><a href="/logout">logout</a></span></div>';
+    html += '<div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"></span></div>';
     html += '<div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div></div></div></body></html>';
 
 
