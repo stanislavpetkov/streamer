@@ -27,24 +27,24 @@ var appPath = require('path').dirname(Object.keys(require.cache)[0]);
 
 var processes = {
     "ffserver": {
-        "app": "ffserver",
+        "app": "/usr/local/bin/ffserver",
         "params": ['-f', appPath + '/' + 'ffserver.conf'],
         "child": null
     },
 
     "ffmpeg_from_udp": {
-        "app": "ffmpeg",///home/sunny/WebstormProjects/streamServ/testrun.sh  
+        "app": "/usr/local/bin/ffmpeg",///home/sunny/WebstormProjects/streamServ/testrun.sh
         "params": ['-re', '-y', '-v', '16', '-i', 'udp://0.0.0.0:1234?fifo_size=1000000&overrun_nonfatal=1', "-vf", "hqdn3d=1.5:1.5:6:6,unsharp=9:9:1.5:3:3:-0.1", '-f', 'ffm', 'http://localhost:8090/feed1.ffm?fifo_size=1000000&overrun_nonfatal=1'],
         "child": null
     },
 
     "ffmpeg_to_cdn": {
-        "app": "ffmpeg",
+        "app": "/usr/local/bin/ffmpeg",
         "params": ['-re', '-y', '-v','16','-i', 'http://localhost:8090/live.flv?fifo_size=1000000&overrun_nonfatal=1', '-c', 'copy', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@pri.cdn.bg:2013/fls/test?fifo_size=1000000&overrun_nonfatal=1'],
         "child": null
     },
     "ffmpeg_to_thumb": {
-        "app": "ffmpeg",
+        "app": "/usr/local/bin/ffmpeg",
         "params": ['-re', '-y', '-i', 'http://localhost:8090/live.ts?fifo_size=1000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","97x55", '-f', 'image2', "-updatefirst","1", 'thumb.png'],
         "child": null
     }
