@@ -144,7 +144,8 @@
 
                 //console.log(data);
 
-
+if (data.hasOwnProperty("feeds"))
+{
                 for (i = 0; i < data.feeds.length; i++) {
                     var feed = data.feeds[i];
                     out += '<p><div class="feeds1">';
@@ -159,7 +160,7 @@
                 }
 
                 document.getElementById("feeds").innerHTML = out;
-
+}
                 out = "";
 
                 /*
@@ -177,7 +178,8 @@
                  videoCodecName: "libx264"
                  videoCodecNameEx: ""
                  */
-
+if (data.hasOwnProperty("streams"))
+{
                 out += '<p><div class="feeds1">';
                 out += "<table><th>No.</th><th>Feed name</th><th>Stream name</th><th>Format name</th><th>Bandwidth</th><th>Bytes transmited</th><th>audio codec</th><th>audio bitrate</th><th>video codec</th><th>video bitrate</th>";
                 for (i = 0; i < data.streams.length; i++) {
@@ -189,7 +191,7 @@
                 }
                 out += "</div>"
                 document.getElementById("streams").innerHTML = out;
-
+}
 
                 out = "";
                 /*
@@ -211,6 +213,8 @@
                  targetDataRate: "0"
                  */
 
+				 if (data.hasOwnProperty("connectionStatus"))
+				 {
                 out += '<p><div class="feeds1">';
                 var bandWidthT = 0;
                 var bandWidthR = 0;
@@ -235,9 +239,9 @@
                 }
                 out += "</div>"
                 document.getElementById("connections").innerHTML = out;
+}
 
-
-                document.getElementById("proc1").innerHTML = procs.FFSERVER;
+                <!-- document.getElementById("proc1").innerHTML = procs.FFSERVER; -->
                 document.getElementById("proc2").innerHTML = procs.FFM_SOURCE;
                 document.getElementById("proc3").innerHTML = procs.FFM_CDN;
                 document.getElementById("proc4").innerHTML = procs.JAVASCRIPT;
@@ -335,12 +339,7 @@
                     <table>
                         <th>PID</th>
                         <th>Process</th>
-                        <th>Control</th>
-                        <tr>
-                            <td class="ca" id="proc1"></td>
-                            <td>Streaming server</td>
-                            <td><input type="button" onclick="reboot('ffserver')" value="reboot"></td>
-                        </tr>
+                        <th>Control</th>                        
                         <tr>
                             <td class="ca" id="proc2"></td>
                             <td>Source feed</td>

@@ -26,26 +26,20 @@ var appPath = require('path').dirname(Object.keys(require.cache)[0]);
 
 
 var processes = {
-    "ffserver": {
-        "app": "/usr/local/bin/ffserver",
-        "params": ['-f', appPath + '/' + 'ffserver.conf'],
-        "child": null
-    },
-
     "ffmpeg_from_udp": {
         "app": "/usr/local/bin/ffmpeg",///home/sunny/WebstormProjects/streamServ/testrun.sh
-        "params": ['-re', '-y', '-v', '16', '-i', 'udp://0.0.0.0:1234?fifo_size=1000000&overrun_nonfatal=1', "-vf", "hqdn3d=1.5:1.5:6:6,unsharp=9:9:1.5:3:3:-0.1", '-f', 'ffm', 'http://localhost:8090/feed1.ffm?fifo_size=1000000&overrun_nonfatal=1'],
+        "params": ['-re', '-y','-rw_timeout','3000000', '-v', '16', '-i', 'udp://192.168.25.174:10001?fifo_size=1000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'libfaac', '-b:a','128K', '-f','hls','-hls_flags', 'delete_segments', '-hls_time', '10', '-hls_base_url', '/', 'hls/playlist.m3u8'],
         "child": null
     },
 
     "ffmpeg_to_cdn": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-re', '-y', '-v','16','-i', 'http://localhost:8090/live.flv?fifo_size=1000000&overrun_nonfatal=1', '-c', 'copy', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@pri.cdn.bg:2013/fls/test?fifo_size=1000000&overrun_nonfatal=1'],
+        "params": ['-re', '-y', '-v','16','-i', 'http://localhost:8090/playlist.m3u8', '-c:v', 'copy', '-c:a', 'aac', '-b:a','128K', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@pri.cdn.bg:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000'],
         "child": null
     },
     "ffmpeg_to_thumb": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-re', '-y', '-i', 'http://localhost:8090/live.ts?fifo_size=1000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","97x55", '-f', 'image2', "-updatefirst","1", 'thumb.png'],
+        "params": ['-re', '-rw_timeout','4000000', '-y', '-i', 'http://localhost:8090/playlist.m3u8', '-vf','fps=5',"-vsync","vfr", "-s","97x55", '-an', '-f', 'image2', "-updatefirst","1", 'hls/thumb.png'],
         "child": null
     }
 
@@ -285,11 +279,11 @@ app.get('/main.css', function (req, res) {
 
 
 app.get('/data', restrict, function (req, res) {
-    request('http://localhost:8090/stat.html', function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var js = JSON.parse(body);
+   // request('http://localhost:8090/stat.html', function (error, response, body) {
+     //   if (!error && response.statusCode == 200) {
+            var js = {};//JSON.parse(body);
             js.streamingUrl = 'http://'+req.socket.localAddress+':8090/';
-            js.procs = {"FFSERVER": processes.ffserver.child.pid,
+            js.procs = {
                 "FFM_SOURCE": processes.ffmpeg_from_udp.child.pid,
                 "FFM_CDN": processes.ffmpeg_to_cdn.child.pid,
                 "JAVASCRIPT": process.pid ,
@@ -298,17 +292,26 @@ app.get('/data', restrict, function (req, res) {
             res.writeHead(200, {"Content-Type": "application/json"});
             res.write(JSON.stringify(js));
             res.end();
-        }
-    });
+      //  }
+   // });
 });
 
 
 app.get('/thumb.png', function(req,res){
-    var data = fs.readFileSync("thumb.png");
-    res.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
+    var stat = fs.statSync("hls/thumb.png")
+    if (stat.isFile())
+{
 
+    var data = fs.readFileSync("hls/thumb.png");
+    res.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
     res.write(data);
     res.end();
+} else 
+{
+    res.writeHead(404,{"Result":"NOT FOUND"});
+    res.end();
+}
+
 });
 
 app.get('/reboot', restrict, function (req, res) {
@@ -325,11 +328,6 @@ app.get('/reboot', restrict, function (req, res) {
     }
 
 
-    if (proc.toUpperCase() == "FFSERVER")
-    {
-        processes.ffserver.child.kill();
-        warn("rebooting FFSERVER");
-    }
 
     if (proc.toUpperCase() == "FFM_SOURCE")
     {
@@ -358,27 +356,6 @@ app.get('/reboot', restrict, function (req, res) {
 
 var spawn = require('child_process').spawn;
 
-function runServer() {
-    if (stateExit) {
-        return;
-    }
-    log("Starting Server");
-    processes.ffserver.child = spawn(processes.ffserver.app, processes.ffserver.params);
-
-
-    processes.ffserver.child.stderr.on('data', function (data) {
-        error('stderr: ' + data);
-    });
-
-    processes.ffserver.child.stdout.on('data', function (data) {
-
-    });
-
-    processes.ffserver.child.on('exit', function (code) {
-        error('server child process exited with code ' + code);
-        process.nextTick(runServer);
-    });
-}
 
 function runFromSource() {
     if (stateExit) {
@@ -411,17 +388,37 @@ function runToCDN() {
         return;
     }
     log("Starting Server to CDN");
+    fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tStarting\n");
     processes.ffmpeg_to_cdn.child = spawn(processes.ffmpeg_to_cdn.app, processes.ffmpeg_to_cdn.params);
 
 
     processes.ffmpeg_to_cdn.child.stderr.on('data', function (data) {
-        //console.log('stderr: ' + data);
+        //console.log('TO CDN stderr: ' + data);
+	fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\t"+data+"\n");
     });
 
     processes.ffmpeg_to_cdn.child.on('exit', function (code) {
         error('stream to CDN child process exited with code ' + code);
-        process.nextTick(runToCDN);
+	fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tTo CDN Exiting::: "+code+"\n");
+//        process.nextTick(runToCDN);
+	setTimeout(runToCDN, 2000);
     });
+}
+
+function removeHLSFiles()
+{
+	var files = fs.readdirSync('./hls/');
+		
+	for (var i = 0; i < files.length; i++) {	
+			
+		var stats = fs.statSync('./hls/'+files[i]);
+	      if (stats.isFile()) 
+		  {
+			  log("Deleting:: "+'./hls/'+files[i]);
+			  fs.unlinkSync('./hls/'+files[i]);
+		  }
+	}	
+return;
 }
 
 
@@ -439,13 +436,14 @@ function runThumb() {
 
     processes.ffmpeg_to_thumb.child.on('exit', function (code) {
         error('Thumbnail Generator process exited with code ' + code);
-        process.nextTick(runThumb);
+//        process.nextTick(runThumb);
+	setTimeout(runThumb, 2000);
     });
 }
 
 
 
-runServer();
+removeHLSFiles();
 runFromSource();
 runToCDN();
 runThumb();
@@ -461,9 +459,7 @@ process.on('error', function (data) {
 
 
 process.on('exit', function (data) {
-    if (processes.ffserver.child) {
-        processes.ffserver.child.kill();
-    }
+    
     if (processes.ffmpeg_to_cdn.child) {
         processes.ffmpeg_to_cdn.child.kill();
     }
@@ -480,9 +476,6 @@ process.on('exit', function (data) {
 
 process.on('SIGINT', function () {
     stateExit = true;
-    if (processes.ffserver.child) {
-        processes.ffserver.child.kill();
-    }
     if (processes.ffmpeg_to_cdn.child) {
         processes.ffmpeg_to_cdn.child.kill();
     }
