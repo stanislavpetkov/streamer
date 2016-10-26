@@ -135,6 +135,29 @@ table {
     display: inline-block;
 }
 
+.la1 {
+    text-align: center;
+    vertical-align: top;
+    position: middle;
+    left: 10px;
+    top: 50px;
+	height: 100px;
+	width: 180px;
+    display: inline-block;
+}
+
+.la2 {
+    text-align: center;
+    vertical-align: top;
+    position: middle;
+    left: 120px;
+    top: 50px;
+	height: 100px;
+	width: 180px;
+    display: inline-block;
+}
+
+
 .ca {
     text-align: center;
     vertical-align: middle;

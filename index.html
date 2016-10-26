@@ -6,6 +6,7 @@
     <script>
         // Closure
         var procs = {};
+        var connections = {};
 
         (function () {
             /**
@@ -119,6 +120,7 @@
 
                     if (myData.hasOwnProperty("procs")) {
                         procs = myData.procs;
+
                     } else {
                         procs = {
                             "FFSERVER": "unknown",
@@ -126,6 +128,15 @@
                             "FFM_CDN": "unknown"
                         };
                     }
+
+                    if (myData.hasOwnProperty("connections")) {
+                        connections = myData.connections;
+                    }
+                    else
+                    {
+                        connections = {};
+                    }
+
                     myFunction(myData);
                     callback("done");
                 }
@@ -213,32 +224,33 @@ if (data.hasOwnProperty("streams"))
                  targetDataRate: "0"
                  */
 
-				 if (data.hasOwnProperty("connectionStatus"))
+				 if (data.hasOwnProperty("connections"))
 				 {
-                out += '<p><div class="feeds1">';
+				     var tmp = '<p><div class="feeds1">';
                 var bandWidthT = 0;
                 var bandWidthR = 0;
 
-                for (i = 0; i < data.connectionStatus.connections.length; i++) {
 
-                    if (data.connectionStatus.connections[i].state != "RECEIVE_DATA") {
-                        bandWidthT += (data.connectionStatus.connections[i].actualDataRate * 1);
-                    }
-                    else {
-                        bandWidthR += (data.connectionStatus.connections[i].actualDataRate * 1);
-                    }
-                }
 
-                out += "<div class='ca'><strong>bandwidth in use: Transmit: " + formatBPS(bandWidthT) + ", Receive: " + formatBPS(bandWidthR) + " from " + formatBPS(data.connectionStatus.maxBandWidth * 1024) + ",  connections in use: " + data.connectionStatus.connectionsCount + " from " + data.connectionStatus.maxConnectionsCount + "</strong></div>";
-                out += "<table><th>No.</th><th>Host</th><th>file</th><th>proto</th><th>state</th><th>target DataRate</th><th>actual DataRate</th><th>bytes Transfered</th>";
-                for (i = 0; i < data.connectionStatus.connections.length; i++) {
-                    var conn = data.connectionStatus.connections[i];
+                     tmp += "<table><th>No.</th><th>Host</th><th>Request Count</th><th>Last Request</th>";
 
-                    out += '<tr><td class="ra">' + i.toString() + "</td><td  class='ra'>" + conn.IP + "</td><td  class='ra'>" + conn.file + "</td><td  class='ra'>" + conn.proto + "</td><td   class='ra'>" + conn.state + "</td><td class='ca'>" + ((conn.targetDataRate < 300 * 1024) ? "---" : formatBPS(conn.targetDataRate)) + "</td><td class='ca'>" + formatBPS(conn.actualDataRate) + "</td><td class='ca'>" + formatBytes(conn.bytesTransfered) + "</td></tr>";
+                     var i = 0;
 
-                }
-                out += "</div>"
-                document.getElementById("connections").innerHTML = out;
+                     Object.keys(data.connections).forEach(function(key) {
+                         var conn = data.connections[key];
+
+                         if (conn.hasOwnProperty("ip") && conn.hasOwnProperty("time") && conn.hasOwnProperty("requestCount"))
+                         {
+                             i++;
+                             var d = new Date(conn.time);
+
+                             tmp += '<tr><td class="ra">' + i.toString() + "</td><td  class='ca'>" + conn.ip + "</td><td  class='ra'>" + conn.requestCount + "</td><td  class='ra'>" + d.toLocaleString() + "</td></tr>";
+                         }
+
+                     });
+
+                     tmp += "</div>"
+                document.getElementById("connections").innerHTML = tmp;
 }
 
                 <!-- document.getElementById("proc1").innerHTML = procs.FFSERVER; -->
@@ -246,6 +258,7 @@ if (data.hasOwnProperty("streams"))
                 document.getElementById("proc3").innerHTML = procs.FFM_CDN;
                 document.getElementById("proc4").innerHTML = procs.JAVASCRIPT;
                 document.getElementById("proc5").innerHTML = procs.FFM_THUMB;
+				document.getElementById("proc6").innerHTML = procs.FFM_THUMB1;
 
                 //out='<p><div class="feeds1">';
 
@@ -262,7 +275,7 @@ if (data.hasOwnProperty("streams"))
 
         function refreshData() {
             getData(function (data) {
-                setTimeout(refreshData, 200);
+                setTimeout(refreshData, 500);
             });
 
         }
@@ -295,9 +308,25 @@ if (data.hasOwnProperty("streams"))
                 newImage.src = "/thumb.png?time=" + new Date();
             }
 
-            setTimeout(updateImage, 500);
+            setTimeout(updateImage, 200);
         }
+		
+        var newImage2 = new Image();
+        newImage2.src = "/thumb1.png";
+
+        function updateImage1()
+        {
+            if(newImage2.complete) {
+                document.getElementById("img2").src = newImage2.src;
+                newImage2 = new Image();
+                newImage2.src = "/thumb1.png?time=" + new Date();
+            }
+
+            setTimeout(updateImage1, 200);
+        }
+
         updateImage();
+		updateImage1();
     </script>
 
     <link rel="stylesheet" href="main.css">
@@ -313,17 +342,16 @@ if (data.hasOwnProperty("streams"))
 
 
         <div class="feedcontainer">
-            <div class="ca"><strong><h3>Configured feeds</h3></strong><span class="la"><img src="null" width="97px" height="55px" id="img1"></span></div>
-            <div id="feeds"></div>
+            <div class="ca"><strong><h3>Configured feeds</h3></strong><span class="la1">
+<strong>Internal (HLS)</strong><br><img src="" width="97px" height="55px" id="img1">
+			</span>			
+			<span class="la2">
+<strong>External (RTMP)</strong><br><img src="" width="97px" height="55px" id="img2">
+			</span>			
+			
+
+
         </div>
-
-
-        <div class="streamscontainer">
-            <div class="ca"><strong><h3>Configured streams</h3></strong></div>
-            <div id="streams"></div>
-        </div>
-
-
         <div class="connectionscontainer">
             <div class="ca"><strong><h3>Current Connections</h3></strong></div>
             <div id="connections"></div>
@@ -360,7 +388,11 @@ if (data.hasOwnProperty("streams"))
                             <td>Thumbnail generator</td>
                             <td><input type="button" onclick="reboot('FFM_THUMB')" value="reboot"></td>
                         </tr>
-
+                        <tr>
+                            <td class="ca" id="proc6"></td>
+                            <td>Thumbnail generator CDN Feed</td>
+                            <td><input type="button" onclick="reboot('FFM_THUMB1')" value="reboot"></td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -374,7 +406,7 @@ if (data.hasOwnProperty("streams"))
     <div class="header"><h2>Streaming Server Monitoring</h2>  <span class="rar"><a href="/logout"">logout</a></span></div>
 
 
-    <div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div>
+    <div class="footer">Copyright (c) 2015-2016 by 7bugs, developed by Stanislav Petkov</div>
 </div>
 </div>
 

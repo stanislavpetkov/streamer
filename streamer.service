@@ -1,0 +1,16 @@
+[Unit]
+Description=Restremer App
+After=network.target auditd.service
+#ConditionPathExists=!/etc/ssh/sshd_not_to_be_run
+
+[Service]
+Type=simple
+#EnvironmentFile=-/etc/default/ssh
+ExecStart=/srv/streamer/boot.sh
+#ExecStop=/srv/streamer/shut.sh
+KillMode=control-group
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+Alias=streamer.service

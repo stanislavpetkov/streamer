@@ -22,26 +22,34 @@ var stateExit = false;
 
 var appPath = require('path').dirname(Object.keys(require.cache)[0]);
 
+var connections = {};
 
 
 
 var processes = {
     "ffmpeg_from_udp": {
         "app": "/usr/local/bin/ffmpeg",///home/sunny/WebstormProjects/streamServ/testrun.sh
-        "params": ['-re', '-y','-rw_timeout','3000000', '-v', '16', '-i', 'udp://192.168.25.174:10001?fifo_size=1000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'libfaac', '-b:a','128K', '-f','hls','-hls_flags', 'delete_segments', '-hls_time', '10', '-hls_base_url', '/', 'hls/playlist.m3u8'],
+        "params": ['-re', '-y','-rw_timeout','3000000', '-v', '16', '-i', 'udp://172.16.57.4:10001?fifo_size=1000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'libfaac', '-b:a','128K', '-f','hls','-hls_flags', 'delete_segments', '-hls_time', '10', '-hls_base_url', '/', 'hls/playlist.m3u8'],
         "child": null
     },
 
     "ffmpeg_to_cdn": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-re', '-y', '-v','16','-i', 'http://localhost:8090/playlist.m3u8', '-c:v', 'copy', '-c:a', 'aac', '-b:a','128K', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@pri.cdn.bg:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000'],
+        "params": ['-re', '-y', '-v','16','-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a','128K', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@pri.cdn.bg:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f','mpegts','udp://127.0.0.1:4567?fifo_size=10000000'],
         "child": null
     },
     "ffmpeg_to_thumb": {
         "app": "/usr/local/bin/ffmpeg",
         "params": ['-re', '-rw_timeout','4000000', '-y', '-i', 'http://localhost:8090/playlist.m3u8', '-vf','fps=5',"-vsync","vfr", "-s","97x55", '-an', '-f', 'image2', "-updatefirst","1", 'hls/thumb.png'],
         "child": null
-    }
+    },
+    "ffmpeg_to_thumb1": {
+        "app": "/usr/local/bin/ffmpeg",
+        "params": ['-re', '-rw_timeout','4000000', '-y', '-i', 'udp://127.0.0.1:4567?fifo_size=10000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","97x55", '-an', '-f', 'image2', "-updatefirst","1", 'hls/thumb_rmt.png'],
+        "child": null
+    },
+
+
 
 };
 
@@ -185,6 +193,39 @@ function restrict(req, res, next) {
 
 }
 
+app.get('/playlist.m3u8',  function (req, response)
+{
+
+
+    fs.readFile("hls/playlist.m3u8", function(err, data)  {
+        if (err)
+        {
+            response.writeHead(404, { "Content-Type": "text/plain"});
+            response.end("file not found");
+            return;
+        }
+
+        response.writeHead(200, {'Content-Type': 'application/vnd.apple.mpegurl'});
+        var forwardedIpsStr = req.header('x-forwarded-for');
+        response.end(data);
+
+
+        if (connections.hasOwnProperty(forwardedIpsStr))
+        {
+            connections[forwardedIpsStr].requestCount++;
+            connections[forwardedIpsStr].ip = forwardedIpsStr;
+            connections[forwardedIpsStr].time = new Date();
+        }
+        else {
+            connections[forwardedIpsStr] = {};
+            connections[forwardedIpsStr].requestCount = 1;
+            connections[forwardedIpsStr].ip = forwardedIpsStr;
+            connections[forwardedIpsStr].time = new Date();
+        }
+
+});
+});
+
 app.get('/',  function (req, res) {
 
 
@@ -282,12 +323,17 @@ app.get('/data', restrict, function (req, res) {
    // request('http://localhost:8090/stat.html', function (error, response, body) {
      //   if (!error && response.statusCode == 200) {
             var js = {};//JSON.parse(body);
-            js.streamingUrl = 'http://'+req.socket.localAddress+':8090/';
+            js.streamingUrl = 'http://'+req.socket.localAddress+':8090/playlist.m3u8';
             js.procs = {
                 "FFM_SOURCE": processes.ffmpeg_from_udp.child.pid,
                 "FFM_CDN": processes.ffmpeg_to_cdn.child.pid,
                 "JAVASCRIPT": process.pid ,
-                "FFM_THUMB": processes.ffmpeg_to_thumb.child.pid};
+                "FFM_THUMB": processes.ffmpeg_to_thumb.child.pid,
+                "FFM_THUMB1": processes.ffmpeg_to_thumb1.child.pid};
+
+
+ 
+            js.connections = connections;
 
             res.writeHead(200, {"Content-Type": "application/json"});
             res.write(JSON.stringify(js));
@@ -297,22 +343,36 @@ app.get('/data', restrict, function (req, res) {
 });
 
 
-app.get('/thumb.png', function(req,res){
-    var stat = fs.statSync("hls/thumb.png")
-    if (stat.isFile())
-{
+app.get('/thumb.png', function(req,response){
+    fs.readFile("hls/thumb.png", function(err, data)  {
+        if (err)
+        {
+            response.writeHead(404, { "Content-Type": "text/plain"});
+            response.end("file not found");
+            return;
+        }
 
-    var data = fs.readFileSync("hls/thumb.png");
-    res.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
-    res.write(data);
-    res.end();
-} else 
-{
-    res.writeHead(404,{"Result":"NOT FOUND"});
-    res.end();
-}
+        response.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
+        response.end(data);
+    });
 
 });
+
+app.get('/thumb1.png', function(req,response){
+    fs.readFile("hls/thumb_rmt.png", function(err, data)  {
+        if (err)
+        {
+            response.writeHead(404, { "Content-Type": "text/plain"});
+            response.end("file not found");
+            return;
+        }
+
+        response.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
+        response.end(data);
+    });
+
+});
+
 
 app.get('/reboot', restrict, function (req, res) {
     var proc = req.query.process;
@@ -345,6 +405,13 @@ app.get('/reboot', restrict, function (req, res) {
     {
         processes.ffmpeg_to_thumb.child.kill();
         warn("rebooting THUMB feed");
+    }
+
+
+    if (proc.toUpperCase() == "FFM_THUMB1")
+    {
+        processes.ffmpeg_to_thumb1.child.kill();
+        warn("rebooting THUMB1 feed");
     }
 
     res.writeHead(200, {"Content-Type": "application/json"});
@@ -401,7 +468,7 @@ function runToCDN() {
         error('stream to CDN child process exited with code ' + code);
 	fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tTo CDN Exiting::: "+code+"\n");
 //        process.nextTick(runToCDN);
-	setTimeout(runToCDN, 2000);
+	setTimeout(runToCDN, 3000);
     });
 }
 
@@ -412,13 +479,12 @@ function removeHLSFiles()
 	for (var i = 0; i < files.length; i++) {	
 			
 		var stats = fs.statSync('./hls/'+files[i]);
-	      if (stats.isFile()) 
+	      if (stats.isFile())
 		  {
 			  log("Deleting:: "+'./hls/'+files[i]);
 			  fs.unlinkSync('./hls/'+files[i]);
 		  }
-	}	
-return;
+	}
 }
 
 
@@ -442,11 +508,31 @@ function runThumb() {
 }
 
 
+function runThumb1() {
+    if (stateExit) {
+        return;
+    }
+    log("Starting Thumbnail Generator 2");
+    processes.ffmpeg_to_thumb1.child = spawn(processes.ffmpeg_to_thumb1.app, processes.ffmpeg_to_thumb1.params);
+
+
+    processes.ffmpeg_to_thumb1.child.stderr.on('data', function (data) {
+        //console.log('stderr: ' + data);
+    });
+
+    processes.ffmpeg_to_thumb.child.on('exit', function (code) {
+        error('Thumbnail Generator 2 process exited with code ' + code);
+//        process.nextTick(runThumb);
+	setTimeout(runThumb1, 2000);
+    });
+}
+
 
 removeHLSFiles();
 runFromSource();
 runToCDN();
 runThumb();
+runThumb1();
 
 process.on('uncaughtException', function (err) {
     // handle the error safely
@@ -470,6 +556,9 @@ process.on('exit', function (data) {
         processes.ffmpeg_to_thumb.child.kill();
     }
 
+    if (processes.ffmpeg_to_thumb1.child) {
+        processes.ffmpeg_to_thumb1.child.kill();
+    }
 
 
 });
@@ -484,6 +573,10 @@ process.on('SIGINT', function () {
     }
     if (processes.ffmpeg_to_thumb.child) {
         processes.ffmpeg_to_thumb.child.kill();
+    }
+
+    if (processes.ffmpeg_to_thumb1.child) {
+        processes.ffmpeg_to_thumb1.child.kill();
     }
 
     log('Got SIGINT.  ');
