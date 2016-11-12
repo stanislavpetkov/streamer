@@ -298,35 +298,40 @@ if (data.hasOwnProperty("streams"))
 
 
         var newImage = new Image();
-        newImage.src = "/thumb.png";
+        newImage.src = "/thumb.jpg";
+
+		
+        var newImage2 = new Image();
+        newImage2.src = "/thumb1.jpg";
+
+
+var img1Time = new Date();
+var img2Time = new Date();
 
         function updateImage()
         {
-            if(newImage.complete) {
+
+	    var difference = (new Date() - img1Time) / 1000;
+            if(newImage.complete || (difference>500)) {
+		img1Time = new Date();
                 document.getElementById("img1").src = newImage.src;
                 newImage = new Image();
-                newImage.src = "/thumb.png?time=" + new Date();
+                newImage.src = "/thumb.jpg";//?time=" + new Date();
+
             }
 
-            setTimeout(updateImage, 200);
-        }
-		
-        var newImage2 = new Image();
-        newImage2.src = "/thumb1.png";
-
-        function updateImage1()
-        {
-            if(newImage2.complete) {
+	    difference = (new Date() - img2Time) / 1000;
+            if(newImage2.complete || (difference>500)) {
+		img2Time = new Date();
                 document.getElementById("img2").src = newImage2.src;
                 newImage2 = new Image();
-                newImage2.src = "/thumb1.png?time=" + new Date();
+                newImage2.src = "/thumb1.jpg";//?time=" + new Date();
             }
 
-            setTimeout(updateImage1, 200);
+            setTimeout(updateImage, 150);
         }
 
         updateImage();
-		updateImage1();
     </script>
 
     <link rel="stylesheet" href="main.css">
@@ -342,12 +347,16 @@ if (data.hasOwnProperty("streams"))
 
 
         <div class="feedcontainer">
-            <div class="ca"><strong><h3>Configured feeds</h3></strong><span class="la1">
-<strong>Internal (HLS)</strong><br><img src="" width="97px" height="55px" id="img1">
-			</span>			
-			<span class="la2">
-<strong>External (RTMP)</strong><br><img src="" width="97px" height="55px" id="img2">
-			</span>			
+            <div class="ca"><strong><h3>Configured feeds</h3></strong>
+<span class="la1">
+<strong>Internal for HLS</strong>
+<br><img src="" width="426px" height="240px" id="img1">
+</span>			
+
+<span class="la2">
+<strong>External for RTMP</strong>
+<br><img src="" width="426px" height="240px" id="img2">
+</span>			
 			
 
 

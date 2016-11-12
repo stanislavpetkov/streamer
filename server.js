@@ -28,24 +28,24 @@ var connections = {};
 
 var processes = {
     "ffmpeg_from_udp": {
-        "app": "/usr/local/bin/ffmpeg",///home/sunny/WebstormProjects/streamServ/testrun.sh
-        "params": ['-re', '-y','-rw_timeout','3000000', '-v', '16', '-i', 'udp://172.16.57.4:10001?fifo_size=1000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'libfaac', '-b:a','128K', '-f','hls','-hls_flags', 'delete_segments', '-hls_time', '10', '-hls_base_url', '/', 'hls/playlist.m3u8'],
+        "app": "/usr/local/bin/ffmpeg",
+        "params": ['-y', '-v', '16', '-i', 'udp://172.16.57.4:10001?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'libfaac', '-b:a','128K', '-f','hls','-hls_flags', 'delete_segments','-hls_time', '10','-metadata','encoder=SUNNY','-metadata', 'service_name=MU-VI.TV','-metadata','service_provider="Streamer Service"', '-hls_base_url', '/', 'hls/playlist.m3u8','-f','mpegts','udp://127.0.0.1:4568?fifo_size=10000000'],
         "child": null
     },
 
     "ffmpeg_to_cdn": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-re', '-y', '-v','16','-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a','128K', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@pri.cdn.bg:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f','mpegts','udp://127.0.0.1:4567?fifo_size=10000000'],
+        "params": ['-y', '-v','16','-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a','128K','-metadata','encoder=SUNNY','-metadata', 'service_name=MU-VI.TV','-metadata','service_provider="Streamer Service"', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f','mpegts','udp://127.0.0.1:4567?fifo_size=10000000'],
         "child": null
     },
     "ffmpeg_to_thumb": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-re', '-rw_timeout','4000000', '-y', '-i', 'http://localhost:8090/playlist.m3u8', '-vf','fps=5',"-vsync","vfr", "-s","97x55", '-an', '-f', 'image2', "-updatefirst","1", 'hls/thumb.png'],
+        "params": ['-y', '-i', 'udp://127.0.0.1:4568?fifo_size=10000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","426x240", '-an', '-f', 'image2', "-q:v","2","-updatefirst","1", 'hls/thumb.jpg'],
         "child": null
     },
     "ffmpeg_to_thumb1": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-re', '-rw_timeout','4000000', '-y', '-i', 'udp://127.0.0.1:4567?fifo_size=10000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","97x55", '-an', '-f', 'image2', "-updatefirst","1", 'hls/thumb_rmt.png'],
+        "params": ['-y', '-i', 'udp://127.0.0.1:4567?fifo_size=10000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","426x240", '-an', '-f', 'image2', "-q:v","2", "-updatefirst","1", 'hls/thumb_rmt.jpg'],
         "child": null
     },
 
@@ -67,7 +67,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 var sessionStore = {
         admin: {password:"Administrator", sessKey:""},
-        sunny: {password:"Administrator", sessKey:""}
+        sunny: {password:"St@nislav78", sessKey:""}
 };
 
 
@@ -120,7 +120,7 @@ function stringify(data) {
 
 function doLog(text) {
     try {
-        process.stdout.write(new Date().toISOString() + "\t" + text + "\n");
+        process.stdout.write(text+ "\n");
     } catch (e)
     {
         //do nothing
@@ -128,15 +128,15 @@ function doLog(text) {
 }
 
 function error() {
-    doLog(clc.red("ERROR\t") + args_toString(arguments));
+    doLog("[ERROR] :: " + args_toString(arguments));
 };
 
 function warn() {
-    doLog(clc.yellow("WARN\t") + args_toString(arguments));
+    doLog("[WARN] :: " + args_toString(arguments));
 };
 
 function log() {
-    doLog(clc.green("LOG\t") + args_toString(arguments));
+    doLog("[LOG] :: " + args_toString(arguments));
 };
 
 function randomStringAsBase64Url(size) {
@@ -343,8 +343,8 @@ app.get('/data', restrict, function (req, res) {
 });
 
 
-app.get('/thumb.png', function(req,response){
-    fs.readFile("hls/thumb.png", function(err, data)  {
+app.get('/thumb.jpg', function(req,response){
+    fs.readFile("hls/thumb.jpg", function(err, data)  {
         if (err)
         {
             response.writeHead(404, { "Content-Type": "text/plain"});
@@ -352,14 +352,14 @@ app.get('/thumb.png', function(req,response){
             return;
         }
 
-        response.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
+        response.writeHead(200, {"Content-Type": "image/jpeg", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
         response.end(data);
     });
 
 });
 
-app.get('/thumb1.png', function(req,response){
-    fs.readFile("hls/thumb_rmt.png", function(err, data)  {
+app.get('/thumb1.jpg', function(req,response){
+    fs.readFile("hls/thumb_rmt.jpg", function(err, data)  {
         if (err)
         {
             response.writeHead(404, { "Content-Type": "text/plain"});
@@ -367,7 +367,7 @@ app.get('/thumb1.png', function(req,response){
             return;
         }
 
-        response.writeHead(200, {"Content-Type": "image/png", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
+        response.writeHead(200, {"Content-Type": "image/jpeg", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
         response.end(data);
     });
 
@@ -460,13 +460,13 @@ function runToCDN() {
 
 
     processes.ffmpeg_to_cdn.child.stderr.on('data', function (data) {
-        //console.log('TO CDN stderr: ' + data);
-	fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\t"+data+"\n");
+    error('TO CDN stderr: ' + data);
+//	fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\t"+data+"\n");
     });
 
     processes.ffmpeg_to_cdn.child.on('exit', function (code) {
         error('stream to CDN child process exited with code ' + code);
-	fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tTo CDN Exiting::: "+code+"\n");
+	//fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tTo CDN Exiting::: "+code+"\n");
 //        process.nextTick(runToCDN);
 	setTimeout(runToCDN, 3000);
     });
@@ -497,7 +497,7 @@ function runThumb() {
 
 
     processes.ffmpeg_to_thumb.child.stderr.on('data', function (data) {
-        //console.log('stderr: ' + data);
+        //error('Thumbnail Generator Error: ' + data);
     });
 
     processes.ffmpeg_to_thumb.child.on('exit', function (code) {
@@ -517,10 +517,10 @@ function runThumb1() {
 
 
     processes.ffmpeg_to_thumb1.child.stderr.on('data', function (data) {
-        //console.log('stderr: ' + data);
+        //error('Thumbnail Generator CDN Error: ' + data);
     });
 
-    processes.ffmpeg_to_thumb.child.on('exit', function (code) {
+    processes.ffmpeg_to_thumb1.child.on('exit', function (code) {
         error('Thumbnail Generator 2 process exited with code ' + code);
 //        process.nextTick(runThumb);
 	setTimeout(runThumb1, 2000);
@@ -579,12 +579,12 @@ process.on('SIGINT', function () {
         processes.ffmpeg_to_thumb1.child.kill();
     }
 
-    log('Got SIGINT.  ');
+    error('Got SIGINT.  ');
     process.exit(0);
 });
 
 
 
 
-
+error('NOT AN ERROR: STREAMER STARTED');
 app.listen(3000);
