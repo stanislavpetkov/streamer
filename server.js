@@ -23,7 +23,7 @@ var connections = {};
 
 
 var processes = {
-    "ffmpeg_from_udp": {
+    "ffmpeg_from_encoder": {
         "app": "/usr/local/bin/ffmpeg",
         "params": ['-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-f', 'hls', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/', 'hls/playlist.m3u8', '-f', 'mpegts', 'udp://127.0.0.1:4568?fifo_size=10000000'],
         "child": null
@@ -31,7 +31,7 @@ var processes = {
 
     "ffmpeg_to_cdn": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-v', '16', '-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist.m3u8'],
+        "params": ['-y', '-v', '16', '-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
         "child": null
     }
 
@@ -288,7 +288,7 @@ app.get('/data', restrict, function (req, res) {
     var js = {};//JSON.parse(body);
     js.streamingUrl = 'http://' + req.socket.localAddress + ':8090/playlist.m3u8';
     js.procs = {
-        "FFM_SOURCE": processes.ffmpeg_from_udp.child.pid,
+        "FFM_SOURCE": processes.ffmpeg_from_encoder.child.pid,
         "FFM_CDN": processes.ffmpeg_to_cdn.child.pid,
         "JAVASCRIPT": process.pid
     };
@@ -320,7 +320,7 @@ app.get('/reboot', restrict, function (req, res) {
 
 
     if (proc.toUpperCase() === "FFM_SOURCE") {
-        processes.ffmpeg_from_udp.child.kill();
+        processes.ffmpeg_from_encoder.child.kill();
         warn("rebooting Source");
     }
 
@@ -345,22 +345,22 @@ function runFromSource() {
         return;
     }
     log("Starting Source to Server");
-    processes.ffmpeg_from_udp.child = spawn(processes.ffmpeg_from_udp.app, processes.ffmpeg_from_udp.params);
+    processes.ffmpeg_from_encoder.child = spawn(processes.ffmpeg_from_encoder.app, processes.ffmpeg_from_encoder.params);
 
 
-    processes.ffmpeg_from_udp.child.stderr.on('data', function (data) {
-        error('\n##################### ffmpeg_from_udp stderr - START\n' + data + '\n##################### ffmpeg_from_udp stderr - END\n');
+    processes.ffmpeg_from_encoder.child.stderr.on('data', function (data) {
+        error('\n##################### ffmpeg_from_encoder stderr - START\n' + data + '\n##################### ffmpeg_from_encoder stderr - END\n');
     });
 
 
-    processes.ffmpeg_from_udp.child.stdout.on('data', function (data) {
+    processes.ffmpeg_from_encoder.child.stdout.on('data', function (data) {
 
-        log('\n##################### ffmpeg_from_udp stdout - START\n' + data + '\n##################### ffmpeg_from_udp stdout - END\n');
+        log('\n##################### ffmpeg_from_encoder stdout - START\n' + data + '\n##################### ffmpeg_from_encoder stdout - END\n');
 
     });
 
 
-    processes.ffmpeg_from_udp.child.on('exit', function (code) {
+    processes.ffmpeg_from_encoder.child.on('exit', function (code) {
         error('stream to Server child process exited with code ' + code);
         process.nextTick(runFromSource);
     });
@@ -447,8 +447,8 @@ process.on('exit', function () {
     if (processes.ffmpeg_to_cdn.child) {
         processes.ffmpeg_to_cdn.child.kill();
     }
-    if (processes.ffmpeg_from_udp.child) {
-        processes.ffmpeg_from_udp.child.kill();
+    if (processes.ffmpeg_from_encoder.child) {
+        processes.ffmpeg_from_encoder.child.kill();
     }
 
 });
@@ -458,8 +458,8 @@ process.on('SIGINT', function () {
     if (processes.ffmpeg_to_cdn.child) {
         processes.ffmpeg_to_cdn.child.kill();
     }
-    if (processes.ffmpeg_from_udp.child) {
-        processes.ffmpeg_from_udp.child.kill();
+    if (processes.ffmpeg_from_encoder.child) {
+        processes.ffmpeg_from_encoder.child.kill();
     }
 
     error('Got SIGINT.  ');
