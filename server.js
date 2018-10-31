@@ -25,7 +25,7 @@ var connections = {};
 var processes = {
     "ffmpeg_from_encoder": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/', 'hls/playlist.m3u8'],
+        "params": ['-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls/', 'hls/playlist.m3u8'],
         "child": null
     },
 
@@ -170,7 +170,7 @@ function restrict(req, res, next) {
 
 }
 
-app.get('/playlist.m3u8', function (req, response) {
+app.get('/hls/playlist.m3u8', function (req, response) {
 
 
     fs.readFile("hls/playlist.m3u8", function (err, data) {
@@ -199,6 +199,39 @@ app.get('/playlist.m3u8', function (req, response) {
 
     });
 });
+
+
+
+app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
+
+
+    fs.readFile("hls_cdn/playlist_cdn.m3u8", function (err, data) {
+        if (err) {
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.end("file not found");
+            return;
+        }
+
+        response.writeHead(200, {'Content-Type': 'application/vnd.apple.mpegurl'});
+        var forwardedIpsStr = req.header('x-forwarded-for');
+        response.end(data);
+
+
+        if (connections.hasOwnProperty(forwardedIpsStr)) {
+            connections[forwardedIpsStr].requestCount++;
+            connections[forwardedIpsStr].ip = forwardedIpsStr;
+            connections[forwardedIpsStr].time = new Date();
+        }
+        else {
+            connections[forwardedIpsStr] = {};
+            connections[forwardedIpsStr].requestCount = 1;
+            connections[forwardedIpsStr].ip = forwardedIpsStr;
+            connections[forwardedIpsStr].time = new Date();
+        }
+
+    });
+});
+
 
 app.get('/', function (req, res) {
 
