@@ -3,7 +3,7 @@
  */
 "use strict";
 
-var express = require('express');
+const express = require('express');
 var bodyParser = require('body-parser'); // for reading POSTed form data into `req.body`
 var expressSession = require('express-session');
 var cookieParser = require('cookie-parser'); // the session is stored in a cookie, so we use this to parse it
