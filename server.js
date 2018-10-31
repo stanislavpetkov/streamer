@@ -235,8 +235,31 @@ app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
 
 
 
-app.use(express.static('hlsjs'), express.static('.'));
 
+app.get('/hlsjs/:name', function (req, res, next) {
+
+    var options = {
+        root: __dirname + '/hlsjs/',
+        dotfiles: 'deny',
+        headers: {
+            'x-timestamp': Date.now(),
+            'x-sent': true
+        }
+    };
+
+    var fileName = req.params.name;
+    res.sendFile(fileName, options, function (err) {
+        if (err) {
+            next(err);
+        } else {
+            console.log('Sent:', fileName);
+        }
+    });
+
+
+    res.send(req.rangeStart);
+
+});
 
 app.get('/', function (req, res) {
 
