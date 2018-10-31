@@ -2,8 +2,6 @@
  * Created by sunny on 15-10-25.
  */
 "use strict";
-var clc = require('cli-color');
-var request = require("request");
 
 var express = require('express');
 var bodyParser = require('body-parser'); // for reading POSTed form data into `req.body`
@@ -25,30 +23,28 @@ var appPath = require('path').dirname(Object.keys(require.cache)[0]);
 var connections = {};
 
 
-
 var processes = {
     "ffmpeg_from_udp": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-v', '16', '-i', 'udp://172.16.57.4:10001?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'libfaac', '-b:a','128K', '-f','hls','-hls_flags', 'delete_segments','-hls_time', '10','-metadata','encoder=SUNNY','-metadata', 'service_name=MU-VI.TV','-metadata','service_provider="Streamer Service"', '-hls_base_url', '/', 'hls/playlist.m3u8','-f','mpegts','udp://127.0.0.1:4568?fifo_size=10000000'],
+        "params": ['-y', '-v', '16', '-i', 'udp://172.16.57.4:10001?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'libfaac', '-b:a', '128K', '-f', 'hls', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/', 'hls/playlist.m3u8', '-f', 'mpegts', 'udp://127.0.0.1:4568?fifo_size=10000000'],
         "child": null
     },
 
     "ffmpeg_to_cdn": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-v','16','-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a','128K','-metadata','encoder=SUNNY','-metadata', 'service_name=MU-VI.TV','-metadata','service_provider="Streamer Service"', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f','mpegts','udp://127.0.0.1:4567?fifo_size=10000000'],
+        "params": ['-y', '-v', '16', '-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000', '-f', 'mpegts', 'udp://127.0.0.1:4567?fifo_size=10000000'],
         "child": null
     },
     "ffmpeg_to_thumb": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-i', 'udp://127.0.0.1:4568?fifo_size=10000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","426x240", '-an', '-f', 'image2', "-q:v","2","-updatefirst","1", 'hls/thumb.jpg'],
+        "params": ['-y', '-i', 'udp://127.0.0.1:4568?fifo_size=10000000&overrun_nonfatal=1', '-vf', 'fps=5', "-vsync", "vfr", "-s", "426x240", '-an', '-f', 'image2', "-q:v", "2", "-updatefirst", "1", 'hls/thumb.jpg'],
         "child": null
     },
     "ffmpeg_to_thumb1": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-i', 'udp://127.0.0.1:4567?fifo_size=10000000&overrun_nonfatal=1', '-vf','fps=5',"-vsync","vfr", "-s","426x240", '-an', '-f', 'image2', "-q:v","2", "-updatefirst","1", 'hls/thumb_rmt.jpg'],
+        "params": ['-y', '-i', 'udp://127.0.0.1:4567?fifo_size=10000000&overrun_nonfatal=1', '-vf', 'fps=5', "-vsync", "vfr", "-s", "426x240", '-an', '-f', 'image2', "-q:v", "2", "-updatefirst", "1", 'hls/thumb_rmt.jpg'],
         "child": null
     },
-
 
 
 };
@@ -56,20 +52,16 @@ var processes = {
 // must use cookieParser before expressSession
 app.use(cookieParser());
 
-app.use(expressSession({secret:'somesecrettokenhere',resave: true, saveUninitialized: true, proxy: true}));
+app.use(expressSession({secret: 'somesecrettokenhere', resave: true, saveUninitialized: true, proxy: true}));
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-
-
+app.use(bodyParser.urlencoded({extended: true}));
 
 
 var sessionStore = {
-        admin: {password:"Administrator", sessKey:""},
-        sunny: {password:"St@nislav78", sessKey:""}
+    admin: {password: "Administrator", sessKey: ""},
+    sunny: {password: "St@nislav78", sessKey: ""}
 };
-
 
 
 function args_toString(args) {
@@ -120,9 +112,8 @@ function stringify(data) {
 
 function doLog(text) {
     try {
-        process.stdout.write(text+ "\n");
-    } catch (e)
-    {
+        process.stdout.write(text + "\n");
+    } catch (e) {
         //do nothing
     }
 }
@@ -144,8 +135,7 @@ function randomStringAsBase64Url(size) {
 }
 
 
-function clean(req)
-{
+function clean(req) {
     delete req.session.userName;
     delete req.session.password;
 }
@@ -153,23 +143,23 @@ function clean(req)
 function restrict(req, res, next) {
     //log(req.session);
     var found = false;
-    if ((req.session.sessKey)){
+    if ((req.session.sessKey)) {
 
-        for(var key in sessionStore) {
+        for (var key in sessionStore) {
             var value = sessionStore[key];
-            if (value.hasOwnProperty("sessKey")){
+            if (value.hasOwnProperty("sessKey")) {
                 if (req.session.sessKey == value.sessKey) {
                     //log("SessKey found");
 
-                 /*
-                    Session expiration
-                    if((process.hrtime()[0] - value.lastUsed)>300){ //5minutes
-                        clean(req);
-                        delete req.session.sessKey;
-                        res.redirect('/');
-                        return;
-                    }
-                   */
+                    /*
+                       Session expiration
+                       if((process.hrtime()[0] - value.lastUsed)>300){ //5minutes
+                           clean(req);
+                           delete req.session.sessKey;
+                           res.redirect('/');
+                           return;
+                       }
+                      */
                     found = true;
                     clean(req);
                     next();
@@ -183,8 +173,7 @@ function restrict(req, res, next) {
             res.redirect('/');
         }
 
-    } else
-    {
+    } else {
         clean(req);
         delete req.session.sessKey;
         res.redirect('/');
@@ -193,14 +182,12 @@ function restrict(req, res, next) {
 
 }
 
-app.get('/playlist.m3u8',  function (req, response)
-{
+app.get('/playlist.m3u8', function (req, response) {
 
 
-    fs.readFile("hls/playlist.m3u8", function(err, data)  {
-        if (err)
-        {
-            response.writeHead(404, { "Content-Type": "text/plain"});
+    fs.readFile("hls/playlist.m3u8", function (err, data) {
+        if (err) {
+            response.writeHead(404, {"Content-Type": "text/plain"});
             response.end("file not found");
             return;
         }
@@ -210,8 +197,7 @@ app.get('/playlist.m3u8',  function (req, response)
         response.end(data);
 
 
-        if (connections.hasOwnProperty(forwardedIpsStr))
-        {
+        if (connections.hasOwnProperty(forwardedIpsStr)) {
             connections[forwardedIpsStr].requestCount++;
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
@@ -223,14 +209,13 @@ app.get('/playlist.m3u8',  function (req, response)
             connections[forwardedIpsStr].time = new Date();
         }
 
+    });
 });
-});
 
-app.get('/',  function (req, res) {
-
+app.get('/', function (req, res) {
 
 
-    var html ="";
+    var html = "";
 
     html = "<html><head><meta charset=\"UTF-8\"><title>Streaming Server Login page</title><link rel=\"stylesheet\" href=\"main.css\"></head><body>";
     html += '<div class="container"><div class="main"><p><p>';
@@ -245,19 +230,16 @@ app.get('/',  function (req, res) {
 });
 
 
-app.post('/', function(req, res){
+app.post('/', function (req, res) {
     if (req.body.userName) {
-        if (sessionStore.hasOwnProperty(req.body.userName))
-        {
+        if (sessionStore.hasOwnProperty(req.body.userName)) {
             var sess = sessionStore[req.body.userName];
 
-            if (sess.password == req.body.password)
-            {
-               log("password is ok");
-               clean(req);
+            if (sess.password == req.body.password) {
+                log("password is ok");
+                clean(req);
 
-                if (sess.sessKey!="")
-                {
+                if (sess.sessKey != "") {
                     sess.sessKey = "";
                 }
                 sess.sessKey = randomStringAsBase64Url(64);
@@ -273,7 +255,7 @@ app.post('/', function(req, res){
         } else {
             delete req.session.sessKey;
             clean(req);
-            res.redirect( '/');
+            res.redirect('/');
 
         }
     }
@@ -283,11 +265,11 @@ app.post('/', function(req, res){
 
 app.get('/logout', function (req, res) {
 
-    if ((req.session.sessKey)){
+    if ((req.session.sessKey)) {
 
-        for(var key in sessionStore) {
+        for (var key in sessionStore) {
             var value = sessionStore[key];
-            if (value.hasOwnProperty("sessKey")){
+            if (value.hasOwnProperty("sessKey")) {
                 if (req.session.sessKey == value.sessKey) {
                     clean(req);
                     value.sessKey = "";
@@ -301,10 +283,7 @@ app.get('/logout', function (req, res) {
 });
 
 
-
-
-
-app.get('/index.html',restrict, function (req, res) {
+app.get('/index.html', restrict, function (req, res) {
     var data = fs.readFileSync("index.html");
     res.writeHead(200, {"Content-Type": "text/html"});
     res.write(data);
@@ -320,54 +299,60 @@ app.get('/main.css', function (req, res) {
 
 
 app.get('/data', restrict, function (req, res) {
-   // request('http://localhost:8090/stat.html', function (error, response, body) {
-     //   if (!error && response.statusCode == 200) {
-            var js = {};//JSON.parse(body);
-            js.streamingUrl = 'http://'+req.socket.localAddress+':8090/playlist.m3u8';
-            js.procs = {
-                "FFM_SOURCE": processes.ffmpeg_from_udp.child.pid,
-                "FFM_CDN": processes.ffmpeg_to_cdn.child.pid,
-                "JAVASCRIPT": process.pid ,
-                "FFM_THUMB": processes.ffmpeg_to_thumb.child.pid,
-                "FFM_THUMB1": processes.ffmpeg_to_thumb1.child.pid};
+    var js = {};//JSON.parse(body);
+    js.streamingUrl = 'http://' + req.socket.localAddress + ':8090/playlist.m3u8';
+    js.procs = {
+        "FFM_SOURCE": processes.ffmpeg_from_udp.child.pid,
+        "FFM_CDN": processes.ffmpeg_to_cdn.child.pid,
+        "JAVASCRIPT": process.pid,
+        "FFM_THUMB": processes.ffmpeg_to_thumb.child.pid,
+        "FFM_THUMB1": processes.ffmpeg_to_thumb1.child.pid
+    };
 
 
- 
-            js.connections = connections;
+    js.connections = connections;
 
-            res.writeHead(200, {"Content-Type": "application/json"});
-            res.write(JSON.stringify(js));
-            res.end();
-      //  }
-   // });
+    res.writeHead(200, {"Content-Type": "application/json"});
+    res.write(JSON.stringify(js));
+    res.end();
+    //  }
+    // });
 });
 
 
-app.get('/thumb.jpg', function(req,response){
-    fs.readFile("hls/thumb.jpg", function(err, data)  {
-        if (err)
-        {
-            response.writeHead(404, { "Content-Type": "text/plain"});
+app.get('/thumb.jpg', function (req, response) {
+    fs.readFile("hls/thumb.jpg", function (err, data) {
+        if (err) {
+            response.writeHead(404, {"Content-Type": "text/plain"});
             response.end("file not found");
             return;
         }
 
-        response.writeHead(200, {"Content-Type": "image/jpeg", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
+        response.writeHead(200, {
+            "Content-Type": "image/jpeg",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        });
         response.end(data);
     });
 
 });
 
-app.get('/thumb1.jpg', function(req,response){
-    fs.readFile("hls/thumb_rmt.jpg", function(err, data)  {
-        if (err)
-        {
-            response.writeHead(404, { "Content-Type": "text/plain"});
+app.get('/thumb1.jpg', function (req, response) {
+    fs.readFile("hls/thumb_rmt.jpg", function (err, data) {
+        if (err) {
+            response.writeHead(404, {"Content-Type": "text/plain"});
             response.end("file not found");
             return;
         }
 
-        response.writeHead(200, {"Content-Type": "image/jpeg", "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"});
+        response.writeHead(200, {
+            "Content-Type": "image/jpeg",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
+        });
         response.end(data);
     });
 
@@ -381,41 +366,35 @@ app.get('/reboot', restrict, function (req, res) {
         proc = req.body.enumName;
     }
 
-    if (proc.toUpperCase() == "JAVASCRIPT")
-    {
+    if (proc.toUpperCase() == "JAVASCRIPT") {
         process.exit(1);
         warn("rebooting SELF");
     }
 
 
-
-    if (proc.toUpperCase() == "FFM_SOURCE")
-    {
+    if (proc.toUpperCase() == "FFM_SOURCE") {
         processes.ffmpeg_from_udp.child.kill();
         warn("rebooting Source");
     }
 
-    if (proc.toUpperCase() == "FFM_CDN")
-    {
+    if (proc.toUpperCase() == "FFM_CDN") {
         processes.ffmpeg_to_cdn.child.kill();
         warn("rebooting CDN feed");
     }
 
-    if (proc.toUpperCase() == "FFM_THUMB")
-    {
+    if (proc.toUpperCase() == "FFM_THUMB") {
         processes.ffmpeg_to_thumb.child.kill();
         warn("rebooting THUMB feed");
     }
 
 
-    if (proc.toUpperCase() == "FFM_THUMB1")
-    {
+    if (proc.toUpperCase() == "FFM_THUMB1") {
         processes.ffmpeg_to_thumb1.child.kill();
         warn("rebooting THUMB1 feed");
     }
 
     res.writeHead(200, {"Content-Type": "application/json"});
-    res.write(JSON.stringify({"error":"OK"}));
+    res.write(JSON.stringify({"error": "OK"}));
 
     res.end();
 });
@@ -433,13 +412,13 @@ function runFromSource() {
 
 
     processes.ffmpeg_from_udp.child.stderr.on('data', function (data) {
-           error('\n##################### ffmpeg_from_udp stderr - START\n' + data+ '\n##################### ffmpeg_from_udp stderr - END\n');
+        error('\n##################### ffmpeg_from_udp stderr - START\n' + data + '\n##################### ffmpeg_from_udp stderr - END\n');
     });
 
 
     processes.ffmpeg_from_udp.child.stdout.on('data', function (data) {
 
-            log('\n##################### ffmpeg_from_udp stdout - START\n' + data+ '\n##################### ffmpeg_from_udp stdout - END\n');
+        log('\n##################### ffmpeg_from_udp stdout - START\n' + data + '\n##################### ffmpeg_from_udp stdout - END\n');
 
     });
 
@@ -460,31 +439,29 @@ function runToCDN() {
 
 
     processes.ffmpeg_to_cdn.child.stderr.on('data', function (data) {
-    error('TO CDN stderr: ' + data);
+        error('TO CDN stderr: ' + data);
 //	fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\t"+data+"\n");
     });
 
     processes.ffmpeg_to_cdn.child.on('exit', function (code) {
         error('stream to CDN child process exited with code ' + code);
-	//fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tTo CDN Exiting::: "+code+"\n");
+        //fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tTo CDN Exiting::: "+code+"\n");
 //        process.nextTick(runToCDN);
-	setTimeout(runToCDN, 3000);
+        setTimeout(runToCDN, 3000);
     });
 }
 
-function removeHLSFiles()
-{
-	var files = fs.readdirSync('./hls/');
-		
-	for (var i = 0; i < files.length; i++) {	
-			
-		var stats = fs.statSync('./hls/'+files[i]);
-	      if (stats.isFile())
-		  {
-			  log("Deleting:: "+'./hls/'+files[i]);
-			  fs.unlinkSync('./hls/'+files[i]);
-		  }
-	}
+function removeHLSFiles() {
+    var files = fs.readdirSync('./hls/');
+
+    for (var i = 0; i < files.length; i++) {
+
+        var stats = fs.statSync('./hls/' + files[i]);
+        if (stats.isFile()) {
+            log("Deleting:: " + './hls/' + files[i]);
+            fs.unlinkSync('./hls/' + files[i]);
+        }
+    }
 }
 
 
@@ -503,7 +480,7 @@ function runThumb() {
     processes.ffmpeg_to_thumb.child.on('exit', function (code) {
         error('Thumbnail Generator process exited with code ' + code);
 //        process.nextTick(runThumb);
-	setTimeout(runThumb, 2000);
+        setTimeout(runThumb, 2000);
     });
 }
 
@@ -523,7 +500,7 @@ function runThumb1() {
     processes.ffmpeg_to_thumb1.child.on('exit', function (code) {
         error('Thumbnail Generator 2 process exited with code ' + code);
 //        process.nextTick(runThumb);
-	setTimeout(runThumb1, 2000);
+        setTimeout(runThumb1, 2000);
     });
 }
 
@@ -545,7 +522,7 @@ process.on('error', function (data) {
 
 
 process.on('exit', function (data) {
-    
+
     if (processes.ffmpeg_to_cdn.child) {
         processes.ffmpeg_to_cdn.child.kill();
     }
@@ -582,8 +559,6 @@ process.on('SIGINT', function () {
     error('Got SIGINT.  ');
     process.exit(0);
 });
-
-
 
 
 error('NOT AN ERROR: STREAMER STARTED');
