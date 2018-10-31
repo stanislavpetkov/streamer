@@ -7,6 +7,6 @@
     "express-session": "*",
     "cookie-parser": "*",
     "base64url": "*",
-    "hls.js":"*"
+    "hls.js": "*"
   }
 }
