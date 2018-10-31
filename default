@@ -53,11 +53,6 @@ location /index.html {
 }
 
 
-location /hlsjs {
-        root   /opt/streamer/;
-}
-
-
 location /playlist.m3u8 {
         access_log off;
         #allow 127.0.0.1;

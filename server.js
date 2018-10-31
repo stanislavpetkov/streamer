@@ -233,6 +233,11 @@ app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
 });
 
 
+
+
+app.use(express.static('hlsjs'));
+
+
 app.get('/', function (req, res) {
 
 
