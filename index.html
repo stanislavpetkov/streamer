@@ -257,8 +257,6 @@ if (data.hasOwnProperty("streams"))
                 document.getElementById("proc2").innerHTML = procs.FFM_SOURCE;
                 document.getElementById("proc3").innerHTML = procs.FFM_CDN;
                 document.getElementById("proc4").innerHTML = procs.JAVASCRIPT;
-                document.getElementById("proc5").innerHTML = procs.FFM_THUMB;
-				document.getElementById("proc6").innerHTML = procs.FFM_THUMB1;
 
                 //out='<p><div class="feeds1">';
 
@@ -294,44 +292,6 @@ if (data.hasOwnProperty("streams"))
             xmlhttp.open("GET", url, true);
             xmlhttp.send();
         }
-
-
-
-        var newImage = new Image();
-        newImage.src = "/thumb.jpg";
-
-		
-        var newImage2 = new Image();
-        newImage2.src = "/thumb1.jpg";
-
-
-var img1Time = new Date();
-var img2Time = new Date();
-
-        function updateImage()
-        {
-
-	    var difference = (new Date() - img1Time) / 1000;
-            if(newImage.complete || (difference>500)) {
-		img1Time = new Date();
-                document.getElementById("img1").src = newImage.src;
-                newImage = new Image();
-                newImage.src = "/thumb.jpg";//?time=" + new Date();
-
-            }
-
-	    difference = (new Date() - img2Time) / 1000;
-            if(newImage2.complete || (difference>500)) {
-		img2Time = new Date();
-                document.getElementById("img2").src = newImage2.src;
-                newImage2 = new Image();
-                newImage2.src = "/thumb1.jpg";//?time=" + new Date();
-            }
-
-            setTimeout(updateImage, 150);
-        }
-
-        updateImage();
     </script>
 
     <link rel="stylesheet" href="main.css">
@@ -392,16 +352,6 @@ var img2Time = new Date();
                             <td>Web Server</td>
                             <td><input type="button" onclick="reboot('JAVASCRIPT')" value="reboot"></td>
                         </tr>
-                        <tr>
-                            <td class="ca" id="proc5"></td>
-                            <td>Thumbnail generator</td>
-                            <td><input type="button" onclick="reboot('FFM_THUMB')" value="reboot"></td>
-                        </tr>
-                        <tr>
-                            <td class="ca" id="proc6"></td>
-                            <td>Thumbnail generator CDN Feed</td>
-                            <td><input type="button" onclick="reboot('FFM_THUMB1')" value="reboot"></td>
-                        </tr>
                     </table>
                 </div>
             </div>
@@ -412,7 +362,7 @@ var img2Time = new Date();
     </div>
 
 
-    <div class="header"><h2>Streaming Server Monitoring</h2>  <span class="rar"><a href="/logout"">logout</a></span></div>
+    <div class="header"><h2>Streaming Server Monitoring</h2>  <span class="rar"><a href="/logout">logout</a></span></div>
 
 
     <div class="footer">Copyright (c) 2015-2016 by 7bugs, developed by Stanislav Petkov</div>
