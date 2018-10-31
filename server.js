@@ -235,6 +235,24 @@ app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
 
 
 
+app.get('/hls/:name', function (req, response) {
+
+    var fileName = 'hls'+ req.params.name;
+
+    fs.readFile(filename, function (err, data) {
+        if (err) {
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.end("file not found");
+            return;
+        }
+
+        response.writeHead(200, {'Content-Type': 'video/mp2t'});
+
+        response.end(data);
+
+
+    });
+});
 
 app.get('/hlsjs/hls.js', function (req, response) {
 
