@@ -25,13 +25,13 @@ var connections = {};
 var processes = {
     "ffmpeg_from_encoder": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/', 'hls/playlist.m3u8', '-f', 'mpegts', 'udp://127.0.0.1:4568?fifo_size=10000000'],
+        "params": ['-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/', 'hls/playlist.m3u8'],
         "child": null
     },
 
     "ffmpeg_to_cdn": {
-        "app": "/usr/local/bin/ffmpega",
-        "params": ['-y', '-v', '16', '-i', 'udp://127.0.0.1:4568?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
+        "app": "/usr/local/bin/ffmpeg",
+        "params": ['-y', '-v', '16', '-i', 'http://172.16.57.3:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
         "child": null
     }
 
