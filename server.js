@@ -236,29 +236,21 @@ app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
 
 
 
-app.get('/hlsjs/:name', function (req, res, next) {
+app.get('/hlsjs/hls.js', function (req, response) {
 
-    var options = {
-        root: __dirname + '/hlsjs/',
-        dotfiles: 'deny',
-        headers: {
-            'x-timestamp': Date.now(),
-            'x-sent': true
-        }
-    };
-
-    var fileName = req.params.name;
-    res.sendFile(fileName, options, function (err) {
+    fs.readFile("./hlsjs/hls.js", function (err, data) {
         if (err) {
-            next(err);
-        } else {
-            console.log('Sent:', fileName);
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.end("file not found");
+            return;
         }
+
+        response.writeHead(200, {'Content-Type': 'application/javascript'});
+
+        response.end(data);
+
+
     });
-
-
-    res.send(req.rangeStart);
-
 });
 
 app.get('/', function (req, res) {
