@@ -377,7 +377,7 @@ if (data.hasOwnProperty("streams"))
     var video1 = document.getElementById('video1');
     if(Hls.isSupported()) {
         let hls = new Hls();
-        hls.loadSource('https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8');
+        hls.loadSource('/hls/playlist.m3u8');
         hls.attachMedia(video1);
         hls.on(Hls.Events.MANIFEST_PARSED,function() {
             video1.play();
@@ -389,7 +389,7 @@ if (data.hasOwnProperty("streams"))
     // Note: it would be more normal to wait on the 'canplay' event below however on Safari (where you are most likely to find built-in HLS support) the video.src URL must be on the user-driven
     // white-list before a 'canplay' event will be emitted; the last video event that can be reliably listened-for when the URL is not on the white-list is 'loadedmetadata'.
     else if (video1.canPlayType('application/vnd.apple.mpegurl')) {
-        video1.src = 'https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8';
+        video1.src = '/hls/playlist.m3u8';
         video1.addEventListener('loadedmetadata',function() {
             video1.play();
         });
@@ -401,7 +401,7 @@ if (data.hasOwnProperty("streams"))
     var video2 = document.getElementById('video2');
     if(Hls.isSupported()) {
         let hls = new Hls();
-        hls.loadSource('/hls/playlist.m3u8');
+        hls.loadSource('/hls_cdn/playlist_cdn.m3u8');
         hls.attachMedia(video2);
         hls.on(Hls.Events.MANIFEST_PARSED,function() {
             video2.play();
