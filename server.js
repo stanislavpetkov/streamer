@@ -239,7 +239,7 @@ app.get('/hls/:name', function (req, response) {
 
     var fileName = 'hls'+ req.params.name;
 
-    fs.readFile(filename, function (err, data) {
+    fs.readFile(fileName, function (err, data) {
         if (err) {
             response.writeHead(404, {"Content-Type": "text/plain"});
             response.end("file not found");
