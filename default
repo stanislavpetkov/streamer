@@ -53,8 +53,8 @@ location /index.html {
 }
 
 
-location /hlsjs/ {
-        root   /opt/streamer/hlsjs/;
+location /hlsjs {
+        root   /opt/streamer/hlsjs;
 }
 
 
