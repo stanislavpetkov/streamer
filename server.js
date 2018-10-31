@@ -31,7 +31,7 @@ var processes = {
 
     "ffmpeg_to_cdn": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-v', '16', '-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/', 'hls_cdn/playlist.m3u8'],
+        "params": ['-y', '-v', '16', '-i', 'udp://172.16.57.4:10002?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist.m3u8'],
         "child": null
     }
 
@@ -408,7 +408,27 @@ function removeHLSFiles() {
 
 
 
+function removeHLS_CDNFiles() {
+    if (!fs.existsSync('./hls_cdn/'))
+    {
+        fs.mkdirSync('./hls_cdn/');
+        return;
+    }
+    var files = fs.readdirSync('./hls_cdn/');
+
+    for (var i = 0; i < files.length; i++) {
+
+        var stats = fs.statSync('./hls_cdn/' + files[i]);
+        if (stats.isFile()) {
+            log("Deleting:: " + './hls_cdn/' + files[i]);
+            fs.unlinkSync('./hls_cdn/' + files[i]);
+        }
+    }
+}
+
+
 removeHLSFiles();
+removeHLS_CDNFiles();
 runFromSource();
 runToCDN();
 
