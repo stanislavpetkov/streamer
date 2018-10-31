@@ -1,9 +1,9 @@
 /**
  * Created by sunny on 15-10-25.
  */
-//"use strict";
+"use strict";
 
-let express = require('express');
+var express = require('express');
 var bodyParser = require('body-parser'); // for reading POSTed form data into `req.body`
 var expressSession = require('express-session');
 var cookieParser = require('cookie-parser'); // the session is stored in a cookie, so we use this to parse it
@@ -79,7 +79,7 @@ function stringify(data) {
     var text = "";
 
     // Handle the 3 simple types, and null or undefined
-    if (null == data || "object" != typeof data) return data;
+    if (null == data || "object" !== typeof data) return data;
 
     // Handle Date
     if (data instanceof Date) {
@@ -120,15 +120,15 @@ function doLog(text) {
 
 function error() {
     doLog("[ERROR] :: " + args_toString(arguments));
-};
+}
 
 function warn() {
     doLog("[WARN] :: " + args_toString(arguments));
-};
+}
 
 function log() {
     doLog("[LOG] :: " + args_toString(arguments));
-};
+}
 
 function randomStringAsBase64Url(size) {
     return base64url(crypto.randomBytes(size));
@@ -148,7 +148,7 @@ function restrict(req, res, next) {
         for (var key in sessionStore) {
             var value = sessionStore[key];
             if (value.hasOwnProperty("sessKey")) {
-                if (req.session.sessKey == value.sessKey) {
+                if (req.session.sessKey === value.sessKey) {
                     //log("SessKey found");
 
                     /*
@@ -215,11 +215,9 @@ app.get('/playlist.m3u8', function (req, response) {
 app.get('/', function (req, res) {
 
 
-    var html = "";
-
-    html = "<html><head><meta charset=\"UTF-8\"><title>Streaming Server Login page</title><link rel=\"stylesheet\" href=\"main.css\"></head><body>";
+    var html = "<html><head><meta charset=\"UTF-8\"><title>Streaming Server Login page</title><link rel=\"stylesheet\" href=\"main.css\"></head><body>";
     html += '<div class="container"><div class="main"><p><p>';
-    html += '<div class="ca"><form action="/" method="post">Login <p><input type="text" name="userName" value="user"><br><input type="password" name="password" value="password"><br><br><button type="submit">Login</button></form></div>'
+    html += '<div class="ca"><form action="/" method="post">Login <p><input type="text" name="userName" value="user"><br><input type="password" name="password" value="password"><br><br><button type="submit">Login</button></form></div>';
     html += '<div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"></span></div>';
     html += '<div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div></div></div></body></html>';
 
@@ -235,11 +233,11 @@ app.post('/', function (req, res) {
         if (sessionStore.hasOwnProperty(req.body.userName)) {
             var sess = sessionStore[req.body.userName];
 
-            if (sess.password == req.body.password) {
+            if (sess.password === req.body.password) {
                 log("password is ok");
                 clean(req);
 
-                if (sess.sessKey != "") {
+                if (sess.sessKey !== "") {
                     sess.sessKey = "";
                 }
                 sess.sessKey = randomStringAsBase64Url(64);
@@ -270,7 +268,7 @@ app.get('/logout', function (req, res) {
         for (var key in sessionStore) {
             var value = sessionStore[key];
             if (value.hasOwnProperty("sessKey")) {
-                if (req.session.sessKey == value.sessKey) {
+                if (req.session.sessKey === value.sessKey) {
                     clean(req);
                     value.sessKey = "";
                     break;
@@ -362,33 +360,33 @@ app.get('/thumb1.jpg', function (req, response) {
 app.get('/reboot', restrict, function (req, res) {
     var proc = req.query.process;
 
-    if ((proc == "") && (req.body.hasOwnProperty("process"))) {
+    if ((proc === "") && (req.body.hasOwnProperty("process"))) {
         proc = req.body.enumName;
     }
 
-    if (proc.toUpperCase() == "JAVASCRIPT") {
+    if (proc.toUpperCase() === "JAVASCRIPT") {
         process.exit(1);
         warn("rebooting SELF");
     }
 
 
-    if (proc.toUpperCase() == "FFM_SOURCE") {
+    if (proc.toUpperCase() === "FFM_SOURCE") {
         processes.ffmpeg_from_udp.child.kill();
         warn("rebooting Source");
     }
 
-    if (proc.toUpperCase() == "FFM_CDN") {
+    if (proc.toUpperCase() === "FFM_CDN") {
         processes.ffmpeg_to_cdn.child.kill();
         warn("rebooting CDN feed");
     }
 
-    if (proc.toUpperCase() == "FFM_THUMB") {
+    if (proc.toUpperCase() === "FFM_THUMB") {
         processes.ffmpeg_to_thumb.child.kill();
         warn("rebooting THUMB feed");
     }
 
 
-    if (proc.toUpperCase() == "FFM_THUMB1") {
+    if (proc.toUpperCase() === "FFM_THUMB1") {
         processes.ffmpeg_to_thumb1.child.kill();
         warn("rebooting THUMB1 feed");
     }
@@ -452,6 +450,11 @@ function runToCDN() {
 }
 
 function removeHLSFiles() {
+    if (!fs.existsSync('./hls/'))
+    {
+        fs.mkdirSync('./hls/');
+        return;
+    }
     var files = fs.readdirSync('./hls/');
 
     for (var i = 0; i < files.length; i++) {
@@ -521,7 +524,7 @@ process.on('error', function (data) {
 });
 
 
-process.on('exit', function (data) {
+process.on('exit', function () {
 
     if (processes.ffmpeg_to_cdn.child) {
         processes.ffmpeg_to_cdn.child.kill();
