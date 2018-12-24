@@ -181,7 +181,7 @@ app.get('/streams', function (req, response) {
     };
 
     res.send(streams);
-};
+});
 
 app.get('/hls/playlist.m3u8', function (req, response) {
 
