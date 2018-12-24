@@ -170,7 +170,7 @@ function restrict(req, res, next) {
 
 }
 
-app.get('/streams', function (req, response) {
+app.get('/streams', function (req, res) {
 
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     console.log("Remote IP: ", ip);
