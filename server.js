@@ -285,6 +285,7 @@ app.get('/playlist_cdn.m3u8', function (req, response) {
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
         }
+
         response.end(data);
     });
 });
