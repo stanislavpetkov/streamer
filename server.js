@@ -176,28 +176,16 @@ app.get('/streams', function (req, res) {
     var localip = req.connection.localAddress;
     console.log("Remote IP: ", ip);
 
+    //url: "http://"+localip+":3000/hls/playlist.m3u8"
     const streams = {
         version: "1.0",
-        url: "http://"+localip+":3000/hls/playlist.m3u8"
+        url: "http://10.10.10.198:3000/hls/playlist.m3u8"
     };
 
     res.send(streams);
 });
 
 
-app.get('/streams1', function (req, res) {
-
-    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    var localip = req.connection.localAddress;
-    console.log("Remote IP: ", ip);
-
-    const streams = {
-        version: "1.0",
-        url: "http://"+localip+":3000/hls/playlist.m3u8"
-    };
-
-    res.send(streams);
-});
 
 app.get('/hls/playlist.m3u8', function (req, response) {
 
