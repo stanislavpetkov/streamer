@@ -226,6 +226,68 @@ app.get('/hls/playlist.m3u8', function (req, response) {
 });
 
 
+app.get('/playlist.m3u8', function (req, response) {
+
+
+    fs.readFile("hls/playlist.m3u8", function (err, data) {
+        if (err) {
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.end("file not found");
+            return;
+        }
+
+        response.writeHead(200, {'Content-Type': 'application/vnd.apple.mpegurl'});
+        //var forwardedIpsStr = req.header('x-forwarded-for');
+        var forwardedIpsStr = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+
+
+        if (connections.hasOwnProperty(forwardedIpsStr)) {
+            connections[forwardedIpsStr].requestCount++;
+            connections[forwardedIpsStr].ip = forwardedIpsStr;
+            connections[forwardedIpsStr].time = new Date();
+        }
+        else {
+            connections[forwardedIpsStr] = {};
+            connections[forwardedIpsStr].requestCount = 1;
+            connections[forwardedIpsStr].ip = forwardedIpsStr;
+            connections[forwardedIpsStr].time = new Date();
+        }
+        response.end(data);
+    });
+});
+
+
+app.get('/playlist_cdn.m3u8', function (req, response) {
+
+
+    fs.readFile("hls_cdn/playlist_cdn.m3u8", function (err, data) {
+        if (err) {
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.end("file not found");
+            return;
+        }
+
+        response.writeHead(200, {'Content-Type': 'application/vnd.apple.mpegurl'});
+        //var forwardedIpsStr = req.header('x-forwarded-for');
+        var forwardedIpsStr = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+
+
+        if (connections.hasOwnProperty(forwardedIpsStr)) {
+            connections[forwardedIpsStr].requestCount++;
+            connections[forwardedIpsStr].ip = forwardedIpsStr;
+            connections[forwardedIpsStr].time = new Date();
+        }
+        else {
+            connections[forwardedIpsStr] = {};
+            connections[forwardedIpsStr].requestCount = 1;
+            connections[forwardedIpsStr].ip = forwardedIpsStr;
+            connections[forwardedIpsStr].time = new Date();
+        }
+        response.end(data);
+    });
+});
 
 app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
 
