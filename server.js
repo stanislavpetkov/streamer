@@ -179,7 +179,7 @@ app.get('/streams', function (req, res) {
     //url: "http://"+localip+":3000/hls/playlist.m3u8"
     const streams = {
         version: "1.0",
-        url: "http://10.10.10.198:3000/hls/playlist.m3u8"
+        url: "http://"+localip+":3000/hls/playlist.m3u8"
     };
 
     res.send(streams);
@@ -198,8 +198,9 @@ app.get('/hls/playlist.m3u8', function (req, response) {
         }
 
         response.writeHead(200, {'Content-Type': 'application/vnd.apple.mpegurl'});
-        var forwardedIpsStr = req.header('x-forwarded-for');
-        response.end(data);
+        //var forwardedIpsStr = req.header('x-forwarded-for');
+        var forwardedIpsStr = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
 
 
         if (connections.hasOwnProperty(forwardedIpsStr)) {
@@ -213,7 +214,7 @@ app.get('/hls/playlist.m3u8', function (req, response) {
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
         }
-
+        response.end(data);
     });
 });
 
@@ -230,8 +231,9 @@ app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
         }
 
         response.writeHead(200, {'Content-Type': 'application/vnd.apple.mpegurl'});
-        var forwardedIpsStr = req.header('x-forwarded-for');
-        response.end(data);
+        //var forwardedIpsStr = req.header('x-forwarded-for');
+        var forwardedIpsStr = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
 
 
         if (connections.hasOwnProperty(forwardedIpsStr)) {
@@ -245,7 +247,7 @@ app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
         }
-
+        response.end(data);
     });
 });
 
