@@ -186,7 +186,7 @@ app.get('/streams', function (req, res) {
     }
     const streams = {
         version: "1.0",
-        url: theUrl;
+        url: theUrl
     };
 
     res.send(streams);
