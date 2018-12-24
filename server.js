@@ -576,4 +576,4 @@ process.on('SIGINT', function () {
 
 
 error('NOT AN ERROR: STREAMER STARTED');
-app.listen(3000);
+app.listen(3000, "0.0.0.0");
