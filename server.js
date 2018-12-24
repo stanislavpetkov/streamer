@@ -170,6 +170,19 @@ function restrict(req, res, next) {
 
 }
 
+app.get('/streams', function (req, response) {
+
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log("Remote IP: ", ip);
+
+    const streams = {
+        version: "1.0",
+        url: "http://10.10.10.198:3000/hls/playlist.m3u8"
+    };
+
+    res.send(streams);
+};
+
 app.get('/hls/playlist.m3u8', function (req, response) {
 
 
