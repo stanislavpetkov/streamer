@@ -175,9 +175,18 @@ app.get('/streams', function (req, res) {
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     var localip = req.connection.localAddress;
     //url: "http://"+localip+":3000/hls/playlist.m3u8"
+
+    var theUrl = "";
+    if (ip==="172.16.41.51")
+    {
+        theUrl = "http://10.10.10.198:3000/hls/playlist.m3u8";
+    }
+    else {
+        theUrl = "http://"+localip+":3000/hls/playlist.m3u8";
+    }
     const streams = {
         version: "1.0",
-        url: "http://"+localip+":3000/hls/playlist.m3u8&rip="+ip
+        url: theUrl;
     };
 
     res.send(streams);
