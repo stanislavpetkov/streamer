@@ -25,7 +25,7 @@ server {
 
 	server_name _;
 
-	location * {
+	location /* {
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
 
