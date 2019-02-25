@@ -172,22 +172,40 @@ function restrict(req, res, next) {
 
 app.get('/streams', function (req, res) {
 
-    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    var forwardedIpsStr = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     var localip = req.connection.localAddress;
     //url: "http://"+localip+":3000/hls/playlist.m3u8"
 
     var theUrl = "";
-    if (ip==="172.16.41.51")
-    {
-        theUrl = "http://10.10.10.198:3000/hls/playlist.m3u8";
+        theUrl = "http://"+localip+":3000/hls/playlist.m3u8";
+
+
+
+
+
+
+    if (connections.hasOwnProperty(forwardedIpsStr)) {
+        connections[forwardedIpsStr].requestCount++;
+        connections[forwardedIpsStr].ip = forwardedIpsStr;
+        connections[forwardedIpsStr].time = new Date();
+        connections[forwardedIpsStr].isMAG = true;
     }
     else {
-        theUrl = "http://"+localip+":3000/hls/playlist.m3u8";
+        connections[forwardedIpsStr] = {};
+        connections[forwardedIpsStr].requestCount = 1;
+        connections[forwardedIpsStr].ip = forwardedIpsStr;
+        connections[forwardedIpsStr].time = new Date();
+        connections[forwardedIpsStr].isMAG = true;
     }
+
+
     const streams = {
         version: "1.0",
         url: theUrl
     };
+
+
+
 
     res.send(streams);
 });
