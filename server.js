@@ -177,7 +177,7 @@ app.get('/streams', function (req, res) {
     //url: "http://"+localip+":3000/hls/playlist.m3u8"
 
     var theUrl = "";
-        theUrl = "rtmp://"+localip+"/live/livetv.stream";
+        theUrl = "rtmp://"+localip+"/live/livetv.stream?rtmp_live=live";
 
 
 
