@@ -25,13 +25,13 @@ var connections = {};
 var processes = {
     "ffmpeg_from_encoder": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-v', '16', '-i', 'rtmp://localhost/live/livetv.stream', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls/', 'hls/playlist.m3u8'],
+        "params": ['-re', '-y', '-v', '16', '-i', 'rtmp://localhost/live/livetv.stream', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls/', 'hls/playlist.m3u8'],
         "child": null
     },
 
     "ffmpeg_to_cdn": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-y', '-v', '16', '-i', 'rtmp://localhost/live/livetv.stream', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
+        "params": ['-re', '-y', '-v', '16', '-i', 'rtmp://localhost/live/livetv.stream', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
         "child": null
     }
 
@@ -177,7 +177,7 @@ app.get('/streams', function (req, res) {
     //url: "http://"+localip+":3000/hls/playlist.m3u8"
 
     var theUrl = "";
-        theUrl = "rtmp://"+localip+"/live/livetv.stream?rtmp_live=live";
+        theUrl = "rtmp://"+localip+"/live/livetv.stream";
 
 
 
