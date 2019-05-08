@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="93f10cf8-7bf4-431c-abcf-dbf690cf554c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -19,11 +18,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="34" column="437" selection-start-line="34" selection-start-column="437" selection-end-line="34" selection-end-column="437" />
+            <state relative-caret-position="305">
+              <caret line="24" column="236" selection-start-line="24" selection-start-column="236" selection-end-line="24" selection-end-column="236" />
             </state>
           </provider>
         </entry>
@@ -55,11 +54,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5565">
-              <caret line="371" column="47" selection-start-line="371" selection-start-column="47" selection-end-line="371" selection-end-column="47" />
+            <state relative-caret-position="305">
+              <caret line="371" column="42" selection-start-line="371" selection-start-column="42" selection-end-line="371" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -90,6 +89,7 @@
       <find>playlist.m3</find>
       <find>rtmp</find>
       <find>ffmpeg_to_cdn</find>
+      <find>2018</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -99,10 +99,10 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/package.json" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/nginx_default_old" />
         <option value="$PROJECT_DIR$/default" />
         <option value="$PROJECT_DIR$/server.js" />
+        <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
   </component>
@@ -182,21 +182,7 @@
       <workItem from="1543140192350" duration="1785000" />
       <workItem from="1545647473262" duration="6115000" />
       <workItem from="1557256099198" duration="1500000" />
-      <workItem from="1557343963233" duration="2703000" />
-    </task>
-    <task id="LOCAL-00024" summary="Thumbs removed">
-      <created>1540989897192</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1540989897192</updated>
-    </task>
-    <task id="LOCAL-00025" summary="Thumbs removed">
-      <created>1540989963602</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1540989963602</updated>
+      <workItem from="1557343963233" duration="3917000" />
     </task>
     <task id="LOCAL-00026" summary="Thumbs removed">
       <created>1540990060041</created>
@@ -527,15 +513,28 @@
       <option name="project" value="LOCAL" />
       <updated>1557346369658</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="/streams added">
+      <created>1557346673216</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1557346673216</updated>
+    </task>
+    <task id="LOCAL-00074" summary="/streams added">
+      <created>1557349029315</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1557349029315</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="24182000" />
+    <option name="totallyTimeSpent" value="25396000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18618144" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -579,8 +578,8 @@
     <entry file="file://$PROJECT_DIR$/cdnLogFile.log" />
     <entry file="file://$PROJECT_DIR$/server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="34" column="437" selection-start-line="34" selection-start-column="437" selection-end-line="34" selection-end-column="437" />
+        <state relative-caret-position="305">
+          <caret line="24" column="236" selection-start-line="24" selection-start-column="236" selection-end-line="24" selection-end-column="236" />
         </state>
       </provider>
     </entry>
@@ -607,8 +606,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5565">
-          <caret line="371" column="47" selection-start-line="371" selection-start-column="47" selection-end-line="371" selection-end-column="47" />
+        <state relative-caret-position="305">
+          <caret line="371" column="42" selection-start-line="371" selection-start-column="42" selection-end-line="371" selection-end-column="42" />
         </state>
       </provider>
     </entry>
