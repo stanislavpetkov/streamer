@@ -22,6 +22,7 @@ var stateExit = false;
 var connections = {};
 
 //, '-c:v', 'copy', '-c:a', 'aac', '-ar','44100', '-b:a', '128K',  '-f', 'flv', 'rtmp://127.0.0.1/live/live.stream?rtmp_live=live&fifo_size=10000000'
+//"params": ['-re', '-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-ar','44100', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
 var processes = {
     "ffmpeg_from_encoder": {
         "app": "/usr/local/bin/ffmpeg",
@@ -31,9 +32,10 @@ var processes = {
 
     "ffmpeg_to_cdn": {
         "app": "/usr/local/bin/ffmpeg",
-        "params": ['-re', '-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-ar','44100', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
+        "params": ['-re', '-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-ar','44100', '-b:a', '128K',  '-f', 'flv', 'rtmp://127.0.0.1/live/live.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
         "child": null
     }
+
 
 };
 
@@ -559,6 +561,29 @@ function runFromSource() {
     processes.ffmpeg_from_encoder.child.on('exit', function (code) {
         error('stream to Server child process exited with code ' + code);
         process.nextTick(runFromSource);
+    });
+}
+
+
+function runToRTMP() {
+    if (stateExit) {
+        return;
+    }
+    log("Starting Server to CDN");
+    fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tStarting\n");
+    processes.ffmpeg_to_cdn.child = spawn(processes.ffmpeg_to_cdn.app, processes.ffmpeg_to_cdn.params);
+
+
+    processes.ffmpeg_to_cdn.child.stderr.on('data', function (data) {
+        error('TO CDN stderr: ' + data);
+//	fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\t"+data+"\n");
+    });
+
+    processes.ffmpeg_to_cdn.child.on('exit', function (code) {
+        error('stream to CDN child process exited with code ' + code);
+        //fs.appendFileSync("cdnLogFile.log", new Date().toISOString() + "\tTo CDN Exiting::: "+code+"\n");
+//        process.nextTick(runToCDN);
+        setTimeout(runToCDN, 3000);
     });
 }
 
