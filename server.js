@@ -21,8 +21,6 @@ var stateExit = false;
 
 var connections = {};
 
-//, '-c:v', 'copy', '-c:a', 'aac', '-ar','44100', '-b:a', '128K',  '-f', 'flv', 'rtmp://127.0.0.1/live/live.stream?rtmp_live=live&fifo_size=10000000'
-//"params": ['-re', '-y', '-v', '16', '-i', 'http://172.16.57.2:8740/encoder1?fifo_size=10000000&overrun_nonfatal=1', '-c:v', 'copy', '-c:a', 'aac', '-ar','44100', '-b:a', '128K',  '-f', 'flv', 'rtmp://mu_varna:mU8Rn0104@85.14.24.36:2013/fls/livetv.stream?rtmp_live=live&fifo_size=10000000','-f', 'hls','-c:v', 'copy', '-c:a', 'aac', '-b:a', '128K', '-hls_flags', 'delete_segments', '-hls_time', '10', '-metadata', 'encoder=SUNNY', '-metadata', 'service_name=MU-VI.TV', '-metadata', 'service_provider="Streamer Service"', '-hls_base_url', '/hls_cdn/', 'hls_cdn/playlist_cdn.m3u8'],
 var processes = {
     "ffmpeg_from_encoder": {
         "app": "/usr/local/bin/ffmpeg",
@@ -179,7 +177,7 @@ app.get('/streams', function (req, res) {
     //url: "http://"+localip+":3000/hls/playlist.m3u8"
 
     var theUrl = "";
-        theUrl = "rtmp://"+localip+"/live/live.stream";
+        theUrl = "http://"+localip+"/hls/playlist.m3u8";
 
 
 

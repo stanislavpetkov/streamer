@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="93f10cf8-7bf4-431c-abcf-dbf690cf554c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -18,11 +19,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="305">
-              <caret line="24" column="236" selection-start-line="24" selection-start-column="236" selection-end-line="24" selection-end-column="236" />
+              <caret line="179" column="54" selection-start-line="179" selection-start-column="54" selection-end-line="179" selection-end-column="54" />
             </state>
           </provider>
         </entry>
@@ -46,19 +47,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/nginx_default_old">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1245">
-              <caret line="83" selection-start-line="83" selection-end-line="83" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="305">
-              <caret line="371" column="42" selection-start-line="371" selection-start-column="42" selection-end-line="371" selection-end-column="42" />
+            <state relative-caret-position="395">
+              <caret line="377" column="8" lean-forward="true" selection-start-line="377" selection-start-column="8" selection-end-line="377" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -87,9 +79,9 @@
       <find>restr</find>
       <find>redire</find>
       <find>playlist.m3</find>
-      <find>rtmp</find>
       <find>ffmpeg_to_cdn</find>
       <find>2018</find>
+      <find>rtmp</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -101,8 +93,8 @@
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/nginx_default_old" />
         <option value="$PROJECT_DIR$/default" />
-        <option value="$PROJECT_DIR$/server.js" />
         <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/server.js" />
       </list>
     </option>
   </component>
@@ -117,7 +109,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -129,6 +120,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -183,13 +175,7 @@
       <workItem from="1545647473262" duration="6115000" />
       <workItem from="1557256099198" duration="1500000" />
       <workItem from="1557343963233" duration="3917000" />
-    </task>
-    <task id="LOCAL-00026" summary="Thumbs removed">
-      <created>1540990060041</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1540990060041</updated>
+      <workItem from="1557594870232" duration="728000" />
     </task>
     <task id="LOCAL-00027" summary="Thumbs removed">
       <created>1540990288569</created>
@@ -527,14 +513,22 @@
       <option name="project" value="LOCAL" />
       <updated>1557349029315</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="/streams added">
+      <created>1557594953164</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1557594953164</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="25396000" />
+    <option name="totallyTimeSpent" value="26124000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18618144" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -576,17 +570,17 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cdnLogFile.log" />
-    <entry file="file://$PROJECT_DIR$/server.js">
+    <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="24" column="236" selection-start-line="24" selection-start-column="236" selection-end-line="24" selection-end-column="236" />
+        <state relative-caret-position="395">
+          <caret line="377" column="8" lean-forward="true" selection-start-line="377" selection-start-column="8" selection-end-line="377" selection-end-column="8" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
+    <entry file="file://$PROJECT_DIR$/nginx_default_old">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
+        <state relative-caret-position="853">
+          <caret line="83" selection-start-line="83" selection-end-line="83" />
         </state>
       </provider>
     </entry>
@@ -597,17 +591,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nginx_default_old">
+    <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1245">
-          <caret line="83" selection-start-line="83" selection-end-line="83" />
+        <state relative-caret-position="180">
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
+    <entry file="file://$PROJECT_DIR$/server.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="305">
-          <caret line="371" column="42" selection-start-line="371" selection-start-column="42" selection-end-line="371" selection-end-column="42" />
+          <caret line="179" column="54" selection-start-line="179" selection-start-column="54" selection-end-line="179" selection-end-column="54" />
         </state>
       </provider>
     </entry>
