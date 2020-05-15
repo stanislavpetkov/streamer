@@ -247,7 +247,10 @@ if (data.hasOwnProperty("streams"))
                              i++;
                              var d = new Date(conn.time);
 
-                             tmp += '<tr><td class="ra">' + i.toString() + "</td><td  class='ca'>" + conn.ip + "</td><td  class='ra'>" + conn.requestCount + "</td><td  class='ra'>" + d.toLocaleString() + "</td><td  class='ra'><input type='button' onclick='reboot("+ conn.isMAG?conn.ip:"NONE"+")' value='"+conn.isMAG?"reboot":"none"+"'></td></tr>";
+                             tmp += '<tr><td class="ra">' + i.toString() + "</td><td  class='ca'>" + conn.ip + "</td><td  class='ra'>" + conn.requestCount + "</td><td  class='ra'>" + d.toLocaleString() + "</td>";
+                             const id = conn.isMAG?conn.ip:"NONE";
+                             tmp +=" <td  class='ra'><input type='button' onclick='reboot("+'"'+id+'"' +")' value='" +'"' +conn.isMAG?"reboot":"none"+'"'+"'></td>";
+                             tmp +="</tr>";
                          }
 
                      });
