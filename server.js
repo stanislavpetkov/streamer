@@ -525,7 +525,7 @@ app.get('/reboot', restrict, function (req, res) {
             warn("Prep for restart " + proc);
             let args = [];
             args[0]=connections[proc].ip;
-            log("Executing mag_reboot: " + exec("mag_reboot.sh", args));
+            log("Executing mag_reboot: " + exec("/opt/streamer/mag_reboot.sh", args));
             connections[proc].requestcount = 0;
         }
     }
