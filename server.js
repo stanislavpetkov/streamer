@@ -403,7 +403,7 @@ app.get('/', function (req, res) {
     html += '<div class="container"><div class="main"><p><p>';
     html += '<div class="ca"><form action="/" method="post">Login <p><input type="text" name="userName" value="user"><br><input type="password" name="password" value="password"><br><br><button type="submit">Login</button></form></div>';
     html += '<div class="header"><h2>Streaming Server Monitoring</h2><span class="rar"></span></div>';
-    html += '<div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div></div></div></body></html>';
+    html += '<div class="footer">Developed by Stanislav Petkov</div></div></div></body></html>';
 
 
     res.send(html);
@@ -508,6 +508,14 @@ app.get('/reboot', restrict, function (req, res) {
     if ((proc === "") && (req.body.hasOwnProperty("process"))) {
         proc = req.body.enumName;
     }
+
+    connections.forEach(function(elm){
+      if ((elm.isMAG) && (elm.ip === proc))
+      {
+          log( "Executing mag_reboot: "+spawn.execFileSync("mag_reboot.sh",elm.ip));
+      }
+    });
+
 
     if (proc.toUpperCase() === "JAVASCRIPT") {
         process.exit(1);

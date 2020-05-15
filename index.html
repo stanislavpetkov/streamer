@@ -235,7 +235,7 @@ if (data.hasOwnProperty("streams"))
 
 
 
-                     tmp += "<table><th>No.</th><th>Host</th><th>Request Count</th><th>Last Request</th>";
+                     tmp += "<table><th>No.</th><th>Host</th><th>Request Count</th><th>Last Request</th><th>Action</th>";
 
                      var i = 0;
 
@@ -247,7 +247,7 @@ if (data.hasOwnProperty("streams"))
                              i++;
                              var d = new Date(conn.time);
 
-                             tmp += '<tr><td class="ra">' + i.toString() + "</td><td  class='ca'>" + conn.ip + "</td><td  class='ra'>" + conn.requestCount + "</td><td  class='ra'>" + d.toLocaleString() + "</td></tr>";
+                             tmp += '<tr><td class="ra">' + i.toString() + "</td><td  class='ca'>" + conn.ip + "</td><td  class='ra'>" + conn.requestCount + "</td><td  class='ra'>" + d.toLocaleString() + "</td><td  class='ra'><input type='button' onclick='reboot("+ conn.isMAG?conn.ip:"NONE"+")' value='"+conn.isMAG?"reboot":"none"+"'></td></tr>";
                          }
 
                      });
@@ -369,7 +369,7 @@ if (data.hasOwnProperty("streams"))
     <div class="header"><h2>Streaming Server Monitoring</h2>  <span class="rar"><a href="/logout">logout</a></span></div>
 
 
-    <div class="footer">Copyright (c) 2015 by 7bugs, developed by Stanislav Petkov</div>
+    <div class="footer">Developed by Stanislav Petkov</div>
 </div>
 </div>
 
