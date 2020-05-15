@@ -526,7 +526,12 @@ app.get('/reboot', restrict, function (req, res) {
             let args = [];
             args[0]=connections[proc].ip;
             log("Executing mag_reboot: " + exec("/opt/streamer/mag_reboot.sh", args));
-            connections[proc].requestcount = 0;
+
+            let elm = connections[proc];
+            elm.requestcount = 0;
+            connections[proc] = elm;
+
+            log("Request Count: "+connections[proc]);
         }
     }
 
