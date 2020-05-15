@@ -232,12 +232,14 @@ app.get('/hls/playlist.m3u8', function (req, response) {
             connections[forwardedIpsStr].requestCount++;
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
+
         }
         else {
             connections[forwardedIpsStr] = {};
             connections[forwardedIpsStr].requestCount = 1;
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
+            connections[forwardedIpsStr].isMAG = false;
         }
         response.end(data);
     });
