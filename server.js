@@ -514,13 +514,17 @@ app.get('/reboot', restrict, function (req, res) {
         proc = req.body.enumName;
     }
 
-    connections.forEach(function(elm){
-      if ((elm.isMAG) && (elm.ip === proc))
-      {
-          log( "Executing mag_reboot: "+spawn.execFileSync("mag_reboot.sh",elm.ip));
-          elm.requestcount=0;
-      }
-    });
+
+
+    if (connections.hasOwnProperty(proc))
+    {
+        if (connections[proc].isMAG) {
+            warn("Prep for restart " + proc);
+            log("Executing mag_reboot: " + spawn.execFileSync("mag_reboot.sh", connections[proc].ip));
+            connections[proc].requestcount = 0;
+        }
+    }
+
 
 
     if (proc.toUpperCase() === "JAVASCRIPT") {
