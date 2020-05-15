@@ -523,7 +523,9 @@ app.get('/reboot', restrict, function (req, res) {
     {
         if (connections[proc].isMAG) {
             warn("Prep for restart " + proc);
-            log("Executing mag_reboot: " + exec("mag_reboot.sh", connections[proc].ip));
+            let args = [];
+            args[0]=connections[proc].ip;
+            log("Executing mag_reboot: " + exec("mag_reboot.sh", args));
             connections[proc].requestcount = 0;
         }
     }
