@@ -64,14 +64,7 @@
       <workItem from="1557343963233" duration="3917000" />
       <workItem from="1557594870232" duration="728000" />
       <workItem from="1589541930767" duration="1309000" />
-      <workItem from="1589543678173" duration="2754000" />
-    </task>
-    <task id="LOCAL-00032" summary="Thumbs removed">
-      <created>1540991514561</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1540991514561</updated>
+      <workItem from="1589543678173" duration="2847000" />
     </task>
     <task id="LOCAL-00033" summary="Thumbs removed">
       <created>1540992211018</created>
@@ -409,7 +402,14 @@
       <option name="project" value="LOCAL" />
       <updated>1589546648660</updated>
     </task>
-    <option name="localTasksCounter" value="81" />
+    <task id="LOCAL-00081" summary="/streams added">
+      <created>1589546826002</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1589546826002</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -422,13 +422,13 @@
     <option name="LAST_COMMIT_MESSAGE" value="/streams added" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="647" y="93" width="848" height="921" key="CommitChangelistDialog2" timestamp="1589546648519">
+    <state x="647" y="93" width="848" height="921" key="CommitChangelistDialog2" timestamp="1589546825911">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="647" y="93" width="848" height="921" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1589546648519" />
-    <state x="671" y="286" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1589546650853">
+    <state x="647" y="93" width="848" height="921" key="CommitChangelistDialog2/0.27.1920.1053@0.27.1920.1053" timestamp="1589546825911" />
+    <state x="671" y="286" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1589546827695">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="671" y="286" width="800" height="535" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1589546650853" />
+    <state x="671" y="286" width="800" height="535" key="Vcs.Push.Dialog.v2/0.27.1920.1053@0.27.1920.1053" timestamp="1589546827695" />
   </component>
 </project>

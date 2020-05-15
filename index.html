@@ -249,7 +249,8 @@ if (data.hasOwnProperty("streams"))
 
                              tmp += '<tr><td class="ra">' + i.toString() + "</td><td  class='ca'>" + conn.ip + "</td><td  class='ra'>" + conn.requestCount + "</td><td  class='ra'>" + d.toLocaleString() + "</td>";
                              const id = conn.isMAG?conn.ip:"NONE";
-                             let btn =   "<input type='button' onclick='reboot("+'"'+id+'"' +")' value='" +conn.isMAG?"reboot":"none"+"'>";
+                             let lbl = conn.isMAG?"reboot":"none";
+                             let btn =   "<input type='button' onclick='reboot("+'"'+id+'"' +")' value='" +lbl+"'>";
 
 
                              tmp +=" <td  class='ra'>"+btn+"</td>";
