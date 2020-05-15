@@ -272,6 +272,7 @@ app.get('/playlist.m3u8', function (req, response) {
             connections[forwardedIpsStr].requestCount = 1;
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
+            connections[forwardedIpsStr].isMAG = false;
         }
         response.end(data);
     });
@@ -304,6 +305,7 @@ app.get('/playlist_cdn.m3u8', function (req, response) {
             connections[forwardedIpsStr].requestCount = 1;
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
+            connections[forwardedIpsStr].isMAG = false;
         }
 
         response.end(data);
@@ -336,6 +338,7 @@ app.get('/hls_cdn/playlist_cdn.m3u8', function (req, response) {
             connections[forwardedIpsStr].requestCount = 1;
             connections[forwardedIpsStr].ip = forwardedIpsStr;
             connections[forwardedIpsStr].time = new Date();
+            connections[forwardedIpsStr].isMAG = false;
         }
         response.end(data);
     });
