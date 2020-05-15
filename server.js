@@ -518,6 +518,7 @@ app.get('/reboot', restrict, function (req, res) {
       if ((elm.isMAG) && (elm.ip === proc))
       {
           log( "Executing mag_reboot: "+spawn.execFileSync("mag_reboot.sh",elm.ip));
+          elm.requestcount=0;
       }
     });
 
