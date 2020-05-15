@@ -11,6 +11,9 @@ var cookieParser = require('cookie-parser'); // the session is stored in a cooki
 var crypto = require('crypto');
 var base64url = require('base64url');
 
+var spawn = require('child_process').spawn;
+var exec = require('child_process').execFileSync;
+
 var app = express();
 
 
@@ -520,7 +523,7 @@ app.get('/reboot', restrict, function (req, res) {
     {
         if (connections[proc].isMAG) {
             warn("Prep for restart " + proc);
-            log("Executing mag_reboot: " + spawn.execFileSync("mag_reboot.sh", connections[proc].ip));
+            log("Executing mag_reboot: " + exec("mag_reboot.sh", connections[proc].ip));
             connections[proc].requestcount = 0;
         }
     }
@@ -551,7 +554,7 @@ app.get('/reboot', restrict, function (req, res) {
 });
 
 
-var spawn = require('child_process').spawn;
+
 
 
 function runFromSource() {
