@@ -1,0 +1,1 @@
+sshpass -f <(printf '%s\n' 930920) ssh root@"$1" "reboot"
