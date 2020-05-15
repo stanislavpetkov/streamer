@@ -528,10 +528,10 @@ app.get('/reboot', restrict, function (req, res) {
             log("Executing mag_reboot: " + exec("/opt/streamer/mag_reboot.sh", args));
 
             let elm = connections[proc];
-            elm.requestcount = 0;
+            elm.requestCount = 0;
             connections[proc] = elm;
 
-            log("Request Count: "+connections[proc]);
+            log("Request Count: "+connections[proc].requestCount);
         }
     }
 
